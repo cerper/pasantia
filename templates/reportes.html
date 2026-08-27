@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maqueta HTML - Reporte de la Competencia</title>
+</head>
+<body>
+
+    <!-- Encabezado de la Página -->
+    <header>
+        <h1>Reporte de la Competencia</h1>
+    </header>
+
+    <main>
+        <!-- Selección de Tipo de Reporte (Selector Superior Global) -->
+        <section>
+            <form action="#" method="post">
+                <div>
+                    <label for="tipo_reporte">Escoger tipo de reporte</label>
+                    <select id="tipo_reporte" name="tipo_reporte">
+                        <option value="">Seleccionar...</option>
+                        <option value="competencia">Competencia</option>
+                    </select>
+                </div>
+            </form>
+        </section>
+
+        <!-- Formulario Principal -->
+        <form action="#"  enctype="multipart/form-data">
+            
+            <!-- SECCIÓN: Situación Actual -->
+            <fieldset>
+                <legend>Situación Actual</legend>
+                
+                <div>
+                    <label for="situacion_movistar">Movistar</label>
+                    <textarea id="situacion_movistar" name="situacion_movistar" placeholder="Ingrese el reporte de situación actual para Movistar..."></textarea>
+                </div>
+                
+                <div>
+                    <label for="situacion_digitel">Digitel</label>
+                    <textarea id="situacion_digitel" name="situacion_digitel" placeholder="Ingrese el reporte de situación actual para Digitel..."></textarea>
+                </div>
+            </fieldset>
+
+            <!-- SECCIÓN: Escenarios y Cursos de Acción -->
+            <fieldset>
+                <legend>Escenarios y Cursos de Acción</legend>
+                
+                <div>
+                    <label for="escenario_categoria">Categoría</label>
+                    <select id="escenario_categoria" name="escenario_categoria">
+                        <option value="">Seleccionar...</option>
+                        <option value="neutral">Neutral</option>
+                        <option value="Favorable">Favorable</option>
+                        <option value="Desfavorable">Desfavorable</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="escenario_analisis">Análisis del escenario</label>
+                    <textarea id="escenario_analisis" name="escenario_analisis" placeholder="Describa el escenario..."></textarea>
+                </div>
+                
+                <div>
+                    <label for="curso_accion">Curso de Acción Estratégico</label>
+                    <textarea id="curso_accion" name="curso_accion" placeholder="Defina el curso de acción..."></textarea>
+                </div>
+            </fieldset>
+
+            <!-- SECCIÓN: Seguimiento a Campañas (Movistar) -->
+            <fieldset>
+                <legend>Seguimiento a Campañas (Movistar)</legend>
+                
+                <div>
+                    <label for="campana_movistar_imagenes">Imágenes de la Campaña</label>
+                    <input type="file" id="campana_movistar_imagenes" name="campana_movistar_imagenes" accept="image/*">
+                    <p>(Toca para subir o arrastra archivos aquí (Imágenes))</p>
+                </div>
+                
+                <div>
+                    <label for="campana_movistar_analisis">Análisis de Campaña</label>
+                    <textarea id="campana_movistar_analisis" name="campana_movistar_analisis" placeholder="Análisis detallado..."></textarea>
+                </div>
+                
+                <div>
+                    <label for="campana_movistar_comentarios">Comentarios de Usuarios</label>
+                    <textarea id="campana_movistar_comentarios" name="campana_movistar_comentarios" placeholder="Resumen de comentarios..."></textarea>
+                </div>
+                
+                <div>
+                    <label for="campana_movistar_metrica_imagen">Imagen de Sentimiento</label>
+                    <input type="file" id="campana_movistar_metrica_imagen" name="campana_movistar_metrica_imagen" accept="image/*">
+                    <p>(Subir imagen de métricas)</p>
+                </div>
+            </fieldset>
+
+            <!-- SECCIÓN: Seguimiento a Campañas (Digitel) -->
+            <fieldset>
+                <legend>Seguimiento a Campañas (Digitel)</legend>
+                
+                <div>
+                    <label for="campana_digitel_imagenes">Imágenes de la Campaña</label>
+                    <input type="file" id="campana_digitel_imagenes" name="campana_digitel_imagenes" accept="image/*">
+                    <p>(Toca para subir o arrastra archivos aquí (Imágenes))</p>
+                </div>
+                
+                <div>
+                    <label for="campana_digitel_analisis">Análisis de Campaña</label>
+                    <textarea id="campana_digitel_analisis" name="campana_digitel_analisis" placeholder="Análisis detallado..."></textarea>
+                </div>
+                
+                <div>
+                    <label for="campana_digitel_comentarios">Comentarios de Usuarios</label>
+                    <textarea id="campana_digitel_comentarios" name="campana_digitel_comentarios" placeholder="Resumen de comentarios..."></textarea>
+                </div>
+                
+                <div>
+                    <label for="campana_digitel_metrica_imagen">Imagen de Sentimiento</label>
+                    <input type="file" id="campana_digitel_metrica_imagen" name="campana_digitel_metrica_imagen" accept="image/*">
+                    <p>(Subir imagen de métricas)</p>
+                </div>
+            </fieldset>
+
+            <!-- SECCIÓN: Comportamiento de la Competencia -->
+            <fieldset>
+                <legend>Comportamiento de la Competencia</legend>
+                
+                <div>
+                    <label for="comportamiento_situacion_general">Situación Actual General</label>
+                    <textarea id="comportamiento_situacion_general" name="comportamiento_situacion_general" placeholder="Resumen general..."></textarea>
+                </div>
+                
+                <div>
+                    <label for="comportamiento_panorama">Panorama a Futuro</label>
+                    <textarea id="comportamiento_panorama" name="comportamiento_panorama" placeholder="Proyecciones..."></textarea>
+                </div>
+            </fieldset>
+
+            <!-- SECCIÓN: Balance Competencia -->
+            <fieldset>
+                <legend>Balance Competencia</legend>
+                <p>DATOS CAPTURADOS</p>
+                
+            </fieldset>
+
+            <!-- Botón de acción principal -->
+            <section>
+                <button type="submit">Guardar Reporte</button>
+            </section>
+
+        </form>
+    </main>
+
+    <!-- Pie de página (opcional, basado en la imagen) -->
+    <footer>
+        <p>&copy; 2026 Movilnet - Inteligencia Competitiva</p>
+    </footer>
+
+</body>
+</html>
