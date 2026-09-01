@@ -1,18 +1,124 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>inicio de sesion</title>
-</head>
-<body>
-    <form action="/" method="post">
-        <div>
-            <input type="email" id="correo" name="correo" placeholder="Enter email">
-            <input type="password" id="contraseña" name="contraseña" placeholder="Enter password">
-            <button id="submitButton">Submit</button>
-            <a href="/registro">Registro</a>
-
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inicio de sesión</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dist/output.css') }}" />
+  </head>
+  <body class="min-h-screen bg-movilnet-bg text-movilnet-dark antialiased">
+    ---extent layout
+    <div class="flex min-h-screen flex-col">
+      <header class="mx-auto flex w-full max-w-[1500px] items-center justify-between px-6 py-5 md:px-10">
+        <div class="flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-full bg-movilnet-primary text-sm font-black text-white shadow-md">m</div>
+          <div class="leading-none">
+            <div class="text-[1.6rem] font-black tracking-[-0.06em] text-movilnet-primary">movilnet</div>
+            <div class="mt-1 text-[0.58rem] font-semibold uppercase tracking-[0.2em] text-movilnet-muted">intelligence</div>
+          </div>
         </div>
-</form>
-</body>
+
+        <button type="button" class="flex h-11 w-11 items-center justify-center rounded-full border border-movilnet-input-border bg-white text-movilnet-dark shadow-sm transition hover:bg-movilnet-bg" aria-label="Perfil">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21a8 8 0 1 0-16 0" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        </button>
+      </header>
+
+      <main class="flex flex-1 items-center justify-center px-4 pb-10 pt-4 md:px-8">
+        <div class="grid w-full max-w-[1200px] overflow-hidden rounded-[28px] border border-movilnet-input-border bg-white/70 shadow-[0_22px_60px_rgba(123,31,31,0.08)] md:grid-cols-2">
+          <section class="relative overflow-hidden bg-gradient-to-br from-movilnet-primary via-[#cf3f3f] to-[#b22929] p-8 md:p-12">
+            <div class="absolute -left-8 top-4 h-28 w-28 rounded-full bg-white/10 blur-2xl"></div>
+            <div class="absolute -right-12 bottom-8 h-32 w-32 rounded-full bg-white/5 blur-3xl"></div>
+
+            <div class="relative z-10 flex h-full flex-col justify-center">
+              <p class="mb-8 inline-flex items-center gap-3 text-[0.72rem] font-semibold uppercase tracking-[0.24em] text-black/60">
+                <span class="inline-block h-2.5 w-2.5 rounded-full bg-white/80"></span>
+                Plataforma de análisis
+              </p>
+
+              <h1 class="max-w-[420px] text-4xl font-black leading-[1.02] tracking-[-0.06em] text-black md:text-[4.1rem]">
+                Tu visión del mercado, en un solo lugar.
+              </h1>
+
+              <p class="mt-6 max-w-md text-lg leading-relaxed text-white/85">
+                Consulta reportes de competencia y convierte información en oportunidades para Movilnet.
+              </p>
+
+              <div class="mt-10 inline-flex items-center gap-3 rounded-xl border border-white/20 bg-white/10 px-4 py-3 text-sm text-white/90 backdrop-blur-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-9Z"/>
+                  <path d="m4 9 8 6 8-6"/>
+                </svg>
+                Información clara. Acción precisa.
+              </div>
+            </div>
+          </section>
+
+          <section class="bg-[#f4f3f3] p-8 md:p-12">
+            <div class="mx-auto max-w-[460px]">
+              <p class="mb-8 text-center text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-movilnet-muted">
+                Acceso seguro
+              </p>
+
+              <h2 class="text-center text-4xl font-black tracking-[-0.06em] text-movilnet-dark md:text-[3rem]">
+                Bienvenido de nuevo
+              </h2>
+
+              <p class="mt-4 text-center text-base text-movilnet-muted">
+                Inicia sesión para acceder a los reportes de competencia.
+              </p>
+
+              <form action="/" method="post" class="mt-8 space-y-5">
+                <div>
+                  <label for="correo" class="mb-2 block text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-movilnet-muted">
+                    Correo electrónico
+                  </label>
+                  <div class="flex items-center gap-3 rounded-xl border border-movilnet-input-border bg-movilnet-input px-4 py-3.5 shadow-inner shadow-white/60 transition focus-within:border-movilnet-accent focus-within:ring-2 focus-within:ring-movilnet-accent/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-movilnet-muted-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-9Z"/>
+                      <path d="m4 8 8 6 8-6"/>
+                    </svg>
+                    <input type="email" id="correo" name="correo" placeholder="ejemplo@movilnet.com.ve" class="w-full bg-transparent text-base text-movilnet-dark placeholder:text-movilnet-muted-light focus:outline-none" required />
+                  </div>
+                </div>
+
+                <div>
+                  <label for="contraseña" class="mb-2 block text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-movilnet-muted">
+                    Contraseña
+                  </label>
+                  <div class="flex items-center gap-3 rounded-xl border border-movilnet-input-border bg-movilnet-input px-4 py-3.5 shadow-inner shadow-white/60 transition focus-within:border-movilnet-accent focus-within:ring-2 focus-within:ring-movilnet-accent/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-movilnet-muted-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="5" y="11" width="14" height="10" rx="2"/>
+                      <path d="M8 11V8a4 4 0 1 1 8 0v3"/>
+                    </svg>
+                    <input type="password" id="contraseña" name="contraseña" placeholder="Ingresa tu contraseña" class="w-full bg-transparent text-base text-movilnet-dark placeholder:text-movilnet-muted-light focus:outline-none" required />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-movilnet-muted-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </div>
+                </div>
+
+               
+                <button type="submit" class="mt-4 flex w-full items-center justify-center gap-3 rounded-xl bg-movilnet-accent px-4 py-4 text-lg font-bold text-black shadow-[0_12px_24px_rgba(240,82,82,0.3)] transition hover:bg-movilnet-accent-hover active:translate-y-[1px]">
+                  Iniciar sesión
+                  <span aria-hidden="true">→</span>
+                </button>
+              </form>
+
+              <p class="mt-8 text-center text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-movilnet-muted">
+                Acceso exclusivo para el equipo movilnet
+              </p>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="border-t border-movilnet-input-border bg-[#f7f4f4] py-4 text-center text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-movilnet-muted">
+        © 2026 movilnet
+      </footer>
+    </div>
+  </body>
 </html>
