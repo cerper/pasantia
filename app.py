@@ -38,7 +38,8 @@ class Role(db.Model):
 class User(UserMixin, db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(50), unique=True, nullable=False)
+    nombre = db.Column(db.String(50),  nullable=False)
+    apellido = db.Column(db.String(50),  nullable=False)
     email = db.Column(db.String(255), unique=True, nullable=False)
     contraseña = db.Column(db.String(255), nullable=False)
     roles = db.relationship('Role', secondary=roles_usuarios, backref=db.backref('usuarios', lazy='dynamic'))
@@ -99,6 +100,7 @@ def index():
 def registro():
     if request.method == "POST":
         nombre = request.form.get("nombre")
+        apellido = request.form.get("apellido")
         email = request.form.get("correo")
         contraseña = request.form.get("contraseña")
         rol = request.form.get("rol")
@@ -114,6 +116,7 @@ def registro():
             password_hashed = generate_password_hash(contraseña)
             nuevo_usuario = User(
                 nombre=nombre,
+                apellido=apellido,
                 email=email,
                 contraseña=password_hashed,
                 roles=[rol_obj]
@@ -132,9 +135,37 @@ def registro():
             return redirect(url_for('registro'))
 
     return render_template("registro.html")
-@app.route("/reportes")
+@app.route("/reportes",  methods=["GET", "POST"])
 @login_required
 def reportes():
+    if request.method == "POST":
+        situacion_movistar = request.form.get("situacion_movistar")
+        situacion_digitel = request.form.get("situacion_digitel")
+        escenario_categoria = request.form.get("escenario_categoria")
+        escenario_analisis = request.form.get("escenario_analisis")
+        cursos_accion = request.form.get("cursos_accion")
+        campana_movistar_imagenes = request.files.get("campana_movistar_imagenes")
+        campana_movistar_analisis = request.form.get("campana_movistar_analisis")
+        campana_movistar_comentarios = request.form.get("campana_movistar_comentarios")
+        campana_movistar_metrica_imagenes = request.files.get("campana_movistar_metrica_imagenes")
+        campana_digitel_imagenes = request.files.get("campana_digitel_imagenes")
+        campana_digitel_analisis = request.form.get("campana_digitel_analisis")
+        campana_digitel_comentarios = request.form.get("campana_digitel_comentarios")
+        campana_digitel_metrica_imagenes = request.files.get("campana_digitel_metrica_imagenes")
+        print(f"Situación Movistar: {situacion_movistar}")
+        print(f"Situación Digitel: {situacion_digitel}")
+        print(f"Categoría del Escenario: {escenario_categoria}")
+        print(f"Análisis del Escenario: {escenario_analisis}")
+        print(f"Cursos de Acción: {cursos_accion}")
+        print(f"Imágenes de la Campaña Movistar: {campana_movistar_imagenes}")
+        print(f"Análisis de la Campaña Movistar: {campana_movistar_analisis}")
+        print(f"Comentarios de la Campaña Movistar: {campana_movistar_comentarios}")
+        print(f"Imagen de Métricas de la Campaña Movistar: {campana_movistar_metrica_imagenes}")
+        print(f"Imágenes de la Campaña Digitel: {campana_digitel_imagenes}")
+        print(f"Análisis de la Campaña Digitel: {campana_digitel_analisis}")
+        print(f"Comentarios de la Campaña Digitel: {campana_digitel_comentarios}")
+        print(f"Imagen de Métricas de la Campaña Digitel: {campana_digitel_metrica_imagenes}")
+
     return render_template("reportes.html")
 
 

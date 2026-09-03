@@ -3,160 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Reporte de la Competencia</title>
+    <title>Reporte de la Competencia</title>
+    <!-- Tailwind CSS (Asegúrate de incluir tu build de Tailwind o usar el CDN para pruebas) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='dist/output.css') }}">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body>
+<body class="bg-movilnet-bg font-sans text-movilnet-dark min-h-screen flex">
 
-    <!-- Encabezado de la Página -->
-    <header>
-        <h1>Reporte de la Competencia</h1>
-    </header>
+    <!-- BARRA LATERAL IZQUIERDA (Sidebar) -->
+    <aside class="w-64 bg-movilnet-card border-r border-movilnet-input-border flex flex-col justify-between p-6 shrink-0 hidden md:flex">
+        <div>
+            <!-- Branding Sidebar -->
+            <div class="mb-8">
+                <h2 class="text-lg font-bold text-movilnet-primary">Movilnet Inteligencia</h2>
+            </div>
 
-    <main>
-        <!-- Selección de Tipo de Reporte (Selector Superior Global) -->
-        <section>
-            <form action="#" method="post">
-                <div>
-                    <label for="tipo_reporte">Escoger tipo de reporte</label>
-                    <select id="tipo_reporte" name="tipo_reporte">
-                        <option value="">Seleccionar...</option>
-                        <option value="competencia">Competencia</option>
-                    </select>
+            <!-- Navegación -->
+            <nav class="space-y-1">
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-movilnet-primary text-white font-medium text-sm transition-colors">
+                    <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+                    <span>Situación Actual</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-movilnet-muted hover:bg-movilnet-bg text-sm font-medium transition-colors">
+                    <i data-lucide="trending-up" class="w-4 h-4"></i>
+                    <span>Escenarios</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-movilnet-muted hover:bg-movilnet-bg text-sm font-medium transition-colors">
+                    <i data-lucide="bookmark" class="w-4 h-4"></i>
+                    <span>Seguimiento</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-movilnet-muted hover:bg-movilnet-bg text-sm font-medium transition-colors">
+                    <i data-lucide="activity" class="w-4 h-4"></i>
+                    <span>Comportamiento</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Footer Sidebar -->
+        <div class="text-xs text-movilnet-muted border-t border-movilnet-input-border pt-4">
+            <p>&copy; 2026 Movilnet - Inteligencia Competitiva</p>
+        </div>
+    </aside>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <div class="flex-1 flex flex-col min-w-0">
+        
+        <!-- Encabezado de la Página -->
+        <header class="bg-movilnet-card border-b border-movilnet-input-border px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-movilnet-primary/10 flex items-center justify-center text-movilnet-primary font-bold">
+                    M
                 </div>
-            </form>
-        </section>
+                <h1 class="text-xl font-bold text-movilnet-primary">Reporte de la Competencia</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-movilnet-muted-light overflow-hidden flex items-center justify-center text-white">
+                    <i data-lucide="user" class="w-5 h-5"></i>
+                </div>
+            </div>
+        </header>
 
-        <!-- Formulario Principal -->
-        <form action="#"  enctype="multipart/form-data">
+        <main class="p-8 space-y-6 max-w-7xl mx-auto w-full">
             
-            <!-- SECCIÓN: Situación Actual -->
-            <fieldset>
-                <legend>Situación Actual</legend>
-                
-                <div>
-                    <label for="situacion_movistar">Movistar</label>
-                    <textarea id="situacion_movistar" name="situacion_movistar" placeholder="Ingrese el reporte de situación actual para Movistar..."></textarea>
-                </div>
-                
-                <div>
-                    <label for="situacion_digitel">Digitel</label>
-                    <textarea id="situacion_digitel" name="situacion_digitel" placeholder="Ingrese el reporte de situación actual para Digitel..."></textarea>
-                </div>
-            </fieldset>
-
-            <!-- SECCIÓN: Escenarios y Cursos de Acción -->
-            <fieldset>
-                <legend>Escenarios y Cursos de Acción</legend>
-                
-                <div>
-                    <label for="escenario_categoria">Categoría</label>
-                    <select id="escenario_categoria" name="escenario_categoria">
-                        <option value="">Seleccionar...</option>
-                        <option value="neutral">Neutral</option>
-                        <option value="Favorable">Favorable</option>
-                        <option value="Desfavorable">Desfavorable</option>
-                    </select>
-                </div>
-                
-                <div>
-                    <label for="escenario_analisis">Análisis del escenario</label>
-                    <textarea id="escenario_analisis" name="escenario_analisis" placeholder="Describa el escenario..."></textarea>
-                </div>
-                
-                <div>
-                    <label for="curso_accion">Curso de Acción Estratégico</label>
-                    <textarea id="curso_accion" name="curso_accion" placeholder="Defina el curso de acción..."></textarea>
-                </div>
-            </fieldset>
-
-            <!-- SECCIÓN: Seguimiento a Campañas (Movistar) -->
-            <fieldset>
-                <legend>Seguimiento a Campañas (Movistar)</legend>
-                
-                <div>
-                    <label for="campana_movistar_imagenes">Imágenes de la Campaña</label>
-                    <input type="file" id="campana_movistar_imagenes" name="campana_movistar_imagenes" accept="image/*">
-                    <p>(Toca para subir o arrastra archivos aquí (Imágenes))</p>
-                </div>
-                
-                <div>
-                    <label for="campana_movistar_analisis">Análisis de Campaña</label>
-                    <textarea id="campana_movistar_analisis" name="campana_movistar_analisis" placeholder="Análisis detallado..."></textarea>
-                </div>
-                
-                <div>
-                    <label for="campana_movistar_comentarios">Comentarios de Usuarios</label>
-                    <textarea id="campana_movistar_comentarios" name="campana_movistar_comentarios" placeholder="Resumen de comentarios..."></textarea>
-                </div>
-                
-                <div>
-                    <label for="campana_movistar_metrica_imagen">Imagen de Sentimiento</label>
-                    <input type="file" id="campana_movistar_metrica_imagen" name="campana_movistar_metrica_imagen" accept="image/*">
-                    <p>(Subir imagen de métricas)</p>
-                </div>
-            </fieldset>
-
-            <!-- SECCIÓN: Seguimiento a Campañas (Digitel) -->
-            <fieldset>
-                <legend>Seguimiento a Campañas (Digitel)</legend>
-                
-                <div>
-                    <label for="campana_digitel_imagenes">Imágenes de la Campaña</label>
-                    <input type="file" id="campana_digitel_imagenes" name="campana_digitel_imagenes" accept="image/*">
-                    <p>(Toca para subir o arrastra archivos aquí (Imágenes))</p>
-                </div>
-                
-                <div>
-                    <label for="campana_digitel_analisis">Análisis de Campaña</label>
-                    <textarea id="campana_digitel_analisis" name="campana_digitel_analisis" placeholder="Análisis detallado..."></textarea>
-                </div>
-                
-                <div>
-                    <label for="campana_digitel_comentarios">Comentarios de Usuarios</label>
-                    <textarea id="campana_digitel_comentarios" name="campana_digitel_comentarios" placeholder="Resumen de comentarios..."></textarea>
-                </div>
-                
-                <div>
-                    <label for="campana_digitel_metrica_imagen">Imagen de Sentimiento</label>
-                    <input type="file" id="campana_digitel_metrica_imagen" name="campana_digitel_metrica_imagen" accept="image/*">
-                    <p>(Subir imagen de métricas)</p>
-                </div>
-            </fieldset>
-
-            <!-- SECCIÓN: Comportamiento de la Competencia -->
-            <fieldset>
-                <legend>Comportamiento de la Competencia</legend>
-                
-                <div>
-                    <label for="comportamiento_situacion_general">Situación Actual General</label>
-                    <textarea id="comportamiento_situacion_general" name="comportamiento_situacion_general" placeholder="Resumen general..."></textarea>
-                </div>
-                
-                <div>
-                    <label for="comportamiento_panorama">Panorama a Futuro</label>
-                    <textarea id="comportamiento_panorama" name="comportamiento_panorama" placeholder="Proyecciones..."></textarea>
-                </div>
-            </fieldset>
-
-            <!-- SECCIÓN: Balance Competencia -->
-            <fieldset>
-                <legend>Balance Competencia</legend>
-                <p>DATOS CAPTURADOS</p>
-                
-            </fieldset>
-
-            <!-- Botón de acción principal -->
-            <section>
-                <button type="submit">Guardar Reporte</button>
+            <!-- Selección de Tipo de Reporte (Selector Superior Global) -->
+            <section class="bg-movilnet-card p-4 rounded-xl border border-movilnet-input-border shadow-sm">
+                <form action="#" method="post">
+                    <div class="flex flex-col gap-1.5">
+                        <label for="tipo_reporte" class="text-xs font-semibold text-movilnet-muted uppercase tracking-wider">Escoger tipo de reporte</label>
+                        <select id="tipo_reporte" name="tipo_reporte" class="w-full bg-movilnet-input border border-movilnet-input-border text-movilnet-dark text-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-movilnet-primary focus:outline-none">
+                            <option value="">Seleccionar...</option>
+                            <option value="competencia" selected>Competencia</option>
+                        </select>
+                    </div>
+                </form>
             </section>
 
-        </form>
-    </main>
+            <!-- Formulario Principal -->
+            <form action="#" enctype="multipart/form-data" class="space-y-6">
+                
+                <!-- GRID CONTENEDOR DE DOS COLUMNAS -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-    <!-- Pie de página (opcional, basado en la imagen) -->
-    <footer>
-        <p>&copy; 2026 Movilnet - Inteligencia Competitiva</p>
-    </footer>
+                    <!-- SECCIÓN: Situación Actual -->
+                    <fieldset class="bg-movilnet-card p-5 rounded-xl border border-movilnet-input-border shadow-sm space-y-4">
+                        <div class="flex items-center gap-2 border-b border-movilnet-input-border pb-3">
+                            <i data-lucide="layout-grid" class="w-5 h-5 text-movilnet-primary"></i>
+                            <legend class="font-bold text-movilnet-dark">Situación Actual</legend>
+                        </div>
+                        
+                        <div class="space-y-1.5">
+                            <label for="situacion_movistar" class="text-xs font-semibold text-movilnet-muted">Movistar</label>
+                            <textarea id="situacion_movistar" name="situacion_movistar" rows="3" placeholder="Ingrese el reporte de situación actual para Movistar..." class="w-full bg-movilnet-input border border-movilnet-input-border text-sm rounded-lg p-3 text-movilnet-dark placeholder-movilnet-muted-light focus:ring-2 focus:ring-movilnet-primary focus:outline-none resize-none"></textarea>
+                        </div>
+                        
+                        <div class="space-y-1.5">
+                            <label for="situacion_digitel" class="text-xs font-semibold text-movilnet-muted">Digitel</label>
+                            <textarea id="situacion_digitel" name="situacion_digitel" rows="3" placeholder="Ingrese el reporte de situación actual para Digitel..." class="w-full bg-movilnet-input border border-movilnet-input-border text-sm rounded-lg p-3 text-movilnet-dark placeholder-movilnet-muted-light focus:ring-2 focus:ring-movilnet-primary focus:outline-none resize-none"></textarea>
+                        </div>
+                    </fieldset>
 
+                    <!-- SECCIÓN: Escenarios y Cursos de Acción -->
+                    <fieldset class="bg-movilnet-card p-5 rounded-xl border border-movilnet-input-border shadow-sm space-y-4">
+                        <div class="flex items-center justify-between border-b border-movilnet-input-border pb-3">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="trending-up" class="w-5 h-5 text-movilnet-primary"></i>
+                                <legend class="font-bold text-movilnet-dark">Escenarios y Cursos de Acción</legend>
+                            </div>
+                            <button type="button" class="w-7 h-7 rounded-full bg-movilnet-primary text-white flex items-center justify-center hover:bg-movilnet-primary-hover transition-colors">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="p-4 border border-movilnet-input-border rounded-lg bg-movilnet-input/50 space-y-3 relative">
+                            <button type="button" class="absolute top-2 right-2 text-movilnet-muted hover:text-movilnet-primary">
+                                <i data-lucide="x" class="w-4 h-4"></i>
+                            </button>
+                            
+                            <div class="space-y-1">
+                                <label for="escenario_categoria" class="text-xs font-semibold text-movilnet-muted">Categoría</label>
+                                <select id="escenario_categoria" name="escenario_categoria" class="w-full bg-movilnet-card border border-movilnet-input-border text-movilnet-dark text-sm rounded-lg px-3 py-2 focus:ring-2 focus:ring-movilnet-primary focus:outline-none">
+                                    <option value="">Seleccionar...</option>
+                                    <option value="neutral">Neutral</option>
+                                    <option value="Favorable">Favorable</option>
+                                    <option value="Desfavorable">Desfavorable</option>
+                                </select>
+                            </div>
+                            
+                            <div class="space-y-1">
+                                <label for="escenario_analisis" class="text-xs font-semibold text-movilnet-muted">Análisis del escenario</label>
+                                <textarea id="escenario_analisis" name="escenario_analisis" rows="2" placeholder="Describa el escenario..." class="w-full bg-movilnet-card border border-movilnet-input-border text-sm rounded-lg p-2.5 text-movilnet-dark placeholder-movilnet-muted-light focus:ring-2 focus:ring-movilnet-primary focus:outline-none resize-none"></textarea>
+                            </div>
+                            
+                            <div class="space-y-1">
+                                <label for="curso_accion" class="text-xs font-semibold text-movilnet-muted">Curso de Acción Estratégico</label>
+                                <textarea id="curso_accion" name="curso_accion" rows="2" placeholder="Defina el curso de acción..." class="w-full bg-movilnet-card border border-movilnet-input-border text-sm rounded-lg p-2.5 text-movilnet-dark placeholder-movilnet-muted-light focus:ring-2 focus:ring-movilnet-primary focus:outline-none resize-none"></textarea>
+                            </div>
+                        </div>
+                    </fieldset>
+
+                    <!-- SECCIÓN: Seguimiento a Campañas (Movistar) -->
+                    <fieldset class="bg-movilnet-card p-5 rounded-xl border border-movilnet-input-border shadow-sm space-y-4">
+                        <div class="flex items-center gap-2 border-b border-movilnet-input-border pb-3">
+                            <i data-lucide="megaphone" class="w-5 h-5 text-movilnet-primary"></i>
+                            <legend class="font-bold text-movilnet-dark">Seguimiento a Campañas (Movistar)</legend>
+                        </div>
+                        
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-movilnet-muted">Imágenes de la Campaña</label>
+                            <label for="campana_movistar_imagenes" class="border-2 border-dashed border-movilnet-input-border rounded-lg p-4 flex flex-col items-center justify-center bg-movilnet-input cursor-pointer hover:bg-movilnet-bg transition-colors">
+                                <i data-lucide="upload-cloud" class="w-6 h-6 text-movilnet-muted mb-1"></i>
+                                <input type="file" id="campana_movistar_imagenes" name="campana_movistar_imagenes" accept="image/*" class="hidden">
+                            </label>
+                        </div>
+                        <div class="image-preview hidden absolute inset-0 bg-cover bg-center rounded-lg">
+                            <button type="button" class="remove-btn absolute top-2 right-2 bg-movilnet-dark/70 hover:bg-movilnet-primary text-white p-1 rounded-full transition-colors">
+                                <i data-lucide="x" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label for="campana_movistar_analisis" class="text-xs font-semibold text-movilnet-muted">Análisis de Campaña</label>
+                            <textarea id="campana_movistar_analisis" name="campana_movistar_analisis" rows="2" placeholder="Análisis detallado..." class="w-full bg-movilnet-input border border-movilnet-input-border text-sm rounded-lg p-2.5 text-movilnet-dark placeholder-movilnet-muted-light focus:ring-2 focus:ring-movilnet-primary focus:outline-none resize-none"></textarea>
+                        </div>
+                        
+                        <div class="space-y-1.5">
+                            <label for="campana_movistar_comentarios" class="text-xs font-semibold text-movilnet-muted">Comentarios de Usuarios</label>
+                            <textarea id="campana_movistar_comentarios" name="campana_movistar_comentarios" rows="2" placeholder="Resumen de comentarios..." class="w-full bg-movilnet-input border border-movilnet-input-border text-sm rounded-lg p-2.5 text-movilnet-dark placeholder-movilnet-muted-light focus:ring-2 focus:ring-movilnet-primary focus:outline-none resize-none"></textarea>
+                        </div>
+                        
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-movilnet-muted">Imagen de Sentimiento</label>
+                            <label for="campana_movistar_metrica_imagen" class="border-2 border-dashed border-movilnet-input-border rounded-lg p-3 flex flex-col items-center justify-center bg-movilnet-input cursor-pointer hover:bg-movilnet-bg transition-colors">
+                                <i data-lucide="upload-cloud" class="w-5 h-5 text-movilnet-muted mb-1"></i>
+                                <span class="text-xs text-movilnet-muted font-medium">Subir imagen de métricas</span>
+                                <input type="file" id="campana_movistar_metrica_imagen" name="campana_movistar_metrica_imagen" accept="image/*" class="hidden">
+                            </label>
+                        </div>
+                    </fieldset>
+
+                    <!-- SECCIÓN: Seguimiento a Campañas (Digitel) -->
+                    <fieldset class="bg-movilnet-card p-5 rounded-xl border border-movilnet-input-border shadow-sm space-y-4">
+                        <div class="flex items-center gap-2 border-b border-movilnet-input-border pb-3">
+                            <i data-lucide="megaphone" class="w-5 h-5 text-movilnet-primary"></i>
+                            <legend class="font-bold text-movilnet-dark">Seguimiento a Campañas (Digitel)</legend>
+                        </div>
+                        
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-movilnet-muted">Imágenes de la Campaña</label>
+                            <label for="campana_digitel_imagenes" class="border-2 border-dashed border-movilnet-input-border rounded-lg p-4 flex flex-col items-center justify-center bg-movilnet-input cursor-pointer hover:bg-movilnet-bg transition-colors">
+                                <i data-lucide="upload-cloud" class="w-6 h-6 text-movilnet-muted mb-1"></i>
+                                <span class="text-xs text-movilnet-muted font-medium text-center">Toca para subir o arrastra archivos aquí (Imágenes)</span>
+                                <input type="file" id="campana_digitel_imagenes" name="campana_digitel_imagenes" accept="image/*" class="hidden">
+                            </label>
+                        </div>
+                        
+                        <div class="space-y-1.5">
+                            <label for="campana_digitel_analisis" class="text-xs font-semibold text-movilnet-muted">Análisis de Campaña</label>
+                            <textarea id="campana_digitel_analisis" name="campana_digitel_analisis" rows="2" placeholder="Análisis detallado..." class="w-full bg-movilnet-input border border-movilnet-input-border text-sm rounded-lg p-2.5 text-movilnet-dark placeholder-movilnet-muted-light focus:ring-2 focus:ring-movilnet-primary focus:outline-none resize-none"></textarea>
+                        </div>
+                        
+                        <div class="space-y-1.5">
+                            <label for="campana_digitel_comentarios" class="text-xs font-semibold text-movilnet-muted">Comentarios de Usuarios</label>
+                            <textarea id="campana_digitel_comentarios" name="campana_digitel_comentarios" rows="2" placeholder="Resumen de comentarios..." class="w-full bg-movilnet-input border border-movilnet-input-border text-sm rounded-lg p-2.5 text-movilnet-dark placeholder-movilnet-muted-light focus:ring-2 focus:ring-movilnet-primary focus:outline-none resize-none"></textarea>
+                        </div>
+                        
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-semibold text-movilnet-muted">Imagen de Sentimiento</label>
+                            <label for="campana_digitel_metrica_imagen" class="border-2 border-dashed border-movilnet-input-border rounded-lg p-3 flex flex-col items-center justify-center bg-movilnet-input cursor-pointer hover:bg-movilnet-bg transition-colors">
+                                <i data-lucide="upload-cloud" class="w-5 h-5 text-movilnet-muted mb-1"></i>
+                                <span class="text-xs text-movilnet-muted font-medium">Subir imagen de métricas</span>
+                                <input type="file" id="campana_digitel_metrica_imagen" name="campana_digitel_metrica_imagen" accept="image/*" class="hidden">
+                            </label>
+                        </div>
+                    </fieldset>
+
+                </div>
+
+                <!-- Botón de Acción Principal -->
+                <section class="flex justify-end pt-4">
+                    <button type="submit" class="bg-movilnet-primary hover:bg-movilnet-primary-hover text-white font-semibold px-6 py-2.5 rounded-lg shadow-sm transition-colors text-sm flex items-center gap-2">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        <span>Guardar Reporte</span>
+                    </button>
+                </section>
+
+            </form>
+        </main>
+    </div>
+
+    <!-- Inicializar Iconos Lucide -->
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>
