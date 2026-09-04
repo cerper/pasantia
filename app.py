@@ -1,4 +1,5 @@
 import os
+import json
 from flask import Flask, render_template, render_template_string, redirect, request, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
@@ -141,30 +142,34 @@ def reportes():
     if request.method == "POST":
         situacion_movistar = request.form.get("situacion_movistar")
         situacion_digitel = request.form.get("situacion_digitel")
-        escenario_categoria = request.form.get("escenario_categoria")
-        escenario_analisis = request.form.get("escenario_analisis")
-        cursos_accion = request.form.get("cursos_accion")
-        campana_movistar_imagenes = request.files.get("campana_movistar_imagenes")
+        escenarios_json = request.form.get("escenarios_json", "[]")
+        try:
+            escenarios = json.loads(escenarios_json)
+        except json.JSONDecodeError:
+            escenarios = []
+        no_campana_movistar = request.form.get("no_campana_movistar") == "1"
+        no_campana_digitel = request.form.get("no_campana_digitel") == "1"
+        campana_movistar_imagenes = request.files.getlist("campana_movistar_imagenes")
         campana_movistar_analisis = request.form.get("campana_movistar_analisis")
         campana_movistar_comentarios = request.form.get("campana_movistar_comentarios")
-        campana_movistar_metrica_imagenes = request.files.get("campana_movistar_metrica_imagenes")
-        campana_digitel_imagenes = request.files.get("campana_digitel_imagenes")
+        campana_movistar_metrica_imagenes = request.files.getlist("campana_movistar_metrica_imagen")
+        campana_digitel_imagenes = request.files.getlist("campana_digitel_imagenes")
         campana_digitel_analisis = request.form.get("campana_digitel_analisis")
         campana_digitel_comentarios = request.form.get("campana_digitel_comentarios")
-        campana_digitel_metrica_imagenes = request.files.get("campana_digitel_metrica_imagenes")
+        campana_digitel_metrica_imagenes = request.files.getlist("campana_digitel_metrica_imagen")
         print(f"Situación Movistar: {situacion_movistar}")
         print(f"Situación Digitel: {situacion_digitel}")
-        print(f"Categoría del Escenario: {escenario_categoria}")
-        print(f"Análisis del Escenario: {escenario_analisis}")
-        print(f"Cursos de Acción: {cursos_accion}")
-        print(f"Imágenes de la Campaña Movistar: {campana_movistar_imagenes}")
+        print(f"Escenarios y cursos de acción: {escenarios}")
+        print(f"No hubo campaña Movistar: {no_campana_movistar}")
+        print(f"Imágenes de la Campaña Movistar: {[archivo.filename for archivo in campana_movistar_imagenes]}")
         print(f"Análisis de la Campaña Movistar: {campana_movistar_analisis}")
         print(f"Comentarios de la Campaña Movistar: {campana_movistar_comentarios}")
-        print(f"Imagen de Métricas de la Campaña Movistar: {campana_movistar_metrica_imagenes}")
-        print(f"Imágenes de la Campaña Digitel: {campana_digitel_imagenes}")
+        print(f"Imágenes de Métricas Movistar: {[archivo.filename for archivo in campana_movistar_metrica_imagenes]}")
+        print(f"No hubo campaña Digitel: {no_campana_digitel}")
+        print(f"Imágenes de la Campaña Digitel: {[archivo.filename for archivo in campana_digitel_imagenes]}")
         print(f"Análisis de la Campaña Digitel: {campana_digitel_analisis}")
         print(f"Comentarios de la Campaña Digitel: {campana_digitel_comentarios}")
-        print(f"Imagen de Métricas de la Campaña Digitel: {campana_digitel_metrica_imagenes}")
+        print(f"Imágenes de Métricas Digitel: {[archivo.filename for archivo in campana_digitel_metrica_imagenes]}")
 
     return render_template("reportes.html")
 
