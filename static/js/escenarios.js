@@ -134,10 +134,9 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {string} inputId - ID del input file
      * @param {string} labelId - ID del label/contenedor de subida
      * @param {string} previewContainerId - ID del contenedor de la vista previa
-     * @param {string} previewImgId - ID de la etiqueta <img>
-     * @param {string} btnRemoveId - ID del botón para eliminar la vista previa
+    
      */
-    function setupImagePreview(inputId, labelId, previewContainerId, previewImgId, btnRemoveId) {
+    function setupImagePreview(inputId, labelId, previewContainerId,) {
         const input = document.getElementById(inputId);
         const label = document.getElementById(labelId);
         const previewContainer = document.getElementById(previewContainerId);
