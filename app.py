@@ -1,7 +1,8 @@
 import os
 import json
 import uuid
-from flask import Flask, render_template, render_template_string, redirect, request, url_for, flash
+from io import BytesIO
+from flask import Flask, render_template, render_template_string, redirect, request, url_for, flash, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from functools import wraps
@@ -12,6 +13,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
 import enum
+from pptx import Presentation
+from pptx.dml.color import RGBColor
+from pptx.util import Inches, Pt
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '1234'
@@ -381,7 +385,7 @@ def reportes():
                     os.remove(ruta)
             flash("No se pudo guardar el reporte.", "error")
 
-        return redirect(url_for("reportes"))
+        return redirect(url_for("dashboard"))
 
     return render_template("reportes.html")
 
@@ -471,7 +475,7 @@ def editar_reporte(reporte_id):
                 if os.path.exists(ruta_archivo):
                     os.remove(ruta_archivo)
             flash("Los cambios del borrador se guardaron correctamente.", "success")
-            return redirect(url_for("editar_reporte", reporte_id=reporte.id, guardado=1))
+            return redirect(url_for("dashboard"))
         except (ValueError, json.JSONDecodeError, SQLAlchemyError, OSError) as error:
             db.session.rollback()
             flash(str(error) if isinstance(error, ValueError) else "No se pudo guardar la edición del reporte.", "error")
@@ -480,11 +484,100 @@ def editar_reporte(reporte_id):
     return render_template("editar_reporte.html", reporte=reporte, seguimientos=seguimientos, guardado=request.args.get("guardado") == "1")
 
 
+def _agregar_texto(slide, texto, left, top, width, height, font_size=18, color=(31, 31, 31), bold=False):
+    caja = slide.shapes.add_textbox(Inches(left), Inches(top), Inches(width), Inches(height))
+    marco = caja.text_frame
+    marco.clear()
+    marco.word_wrap = True
+    for indice, parrafo_texto in enumerate(str(texto or "Sin información.").split("\n")):
+        parrafo = marco.paragraphs[0] if indice == 0 else marco.add_paragraph()
+        parrafo.text = parrafo_texto
+        parrafo.font.name = "Aptos"
+        parrafo.font.size = Pt(font_size)
+        parrafo.font.bold = bold
+        parrafo.font.color.rgb = RGBColor(*color)
+        parrafo.space_after = Pt(6)
+    return caja
+
+
+def _estilo_slide(slide, titulo, subtitulo=None):
+    fondo = slide.background.fill
+    fondo.solid()
+    fondo.fore_color.rgb = RGBColor(244, 244, 244)
+    banda = slide.shapes.add_shape(1, Inches(0), Inches(0), Inches(13.333), Inches(0.22))
+    banda.fill.solid()
+    banda.fill.fore_color.rgb = RGBColor(201, 59, 59)
+    banda.line.fill.background()
+    _agregar_texto(slide, titulo, 0.65, 0.55, 12, 0.55, 26, (201, 59, 59), True)
+    if subtitulo:
+        _agregar_texto(slide, subtitulo, 0.65, 1.12, 12, 0.3, 10, (115, 115, 115))
+
+
+def generar_pptx(reporte):
+    presentacion = Presentation()
+    presentacion.slide_width = Inches(13.333)
+    presentacion.slide_height = Inches(7.5)
+    layout = presentacion.slide_layouts[6]
+
+    portada = presentacion.slides.add_slide(layout)
+    _estilo_slide(portada, "Análisis de la competencia", "Movilnet Intelligence")
+    _agregar_texto(portada, f"Reporte #{reporte.id}", 0.8, 2.35, 11.8, 0.8, 34, (31, 31, 31), True)
+    _agregar_texto(portada, f"Tipo: {reporte.tipo_reporte.capitalize()}\nActualizado: {reporte.updated_at.strftime('%d/%m/%Y %H:%M')}", 0.85, 3.35, 5.5, 1.0, 16, (115, 115, 115))
+    _agregar_texto(portada, "Inteligencia competitiva", 0.85, 6.55, 5, 0.3, 11, (201, 59, 59), True)
+
+    situacion = presentacion.slides.add_slide(layout)
+    _estilo_slide(situacion, "Situación actual", "Lectura comparativa de operadores")
+    for left, nombre, contenido in ((0.7, "Movistar", reporte.situacion_movistar), (6.85, "Digitel", reporte.situacion_digitel)):
+        panel = situacion.shapes.add_shape(5, Inches(left), Inches(1.75), Inches(5.75), Inches(4.7))
+        panel.fill.solid()
+        panel.fill.fore_color.rgb = RGBColor(255, 255, 255)
+        panel.line.color.rgb = RGBColor(229, 229, 229)
+        _agregar_texto(situacion, nombre, left + 0.3, 2.05, 5.1, 0.4, 20, (201, 59, 59), True)
+        _agregar_texto(situacion, contenido, left + 0.3, 2.65, 5.1, 3.3, 15)
+
+    for indice, escenario in enumerate(reporte.escenarios, 1):
+        slide = presentacion.slides.add_slide(layout)
+        _estilo_slide(slide, f"Escenario {indice}: {escenario.categoria.value}", "Análisis y curso de acción estratégico")
+        _agregar_texto(slide, "ANÁLISIS", 0.8, 1.85, 5.8, 0.3, 11, (201, 59, 59), True)
+        _agregar_texto(slide, escenario.analisis, 0.8, 2.25, 5.7, 3.8, 17)
+        _agregar_texto(slide, "CURSO DE ACCIÓN", 6.95, 1.85, 5.5, 0.3, 11, (201, 59, 59), True)
+        _agregar_texto(slide, escenario.curso_accion, 6.95, 2.25, 5.55, 3.8, 17)
+
+    for seguimiento in reporte.seguimientos:
+        slide = presentacion.slides.add_slide(layout)
+        _estilo_slide(slide, f"Seguimiento de campaña: {seguimiento.operadora}", "Campañas, percepción y métricas")
+        _agregar_texto(slide, "ANÁLISIS DE CAMPAÑA", 0.8, 1.8, 5.7, 0.3, 11, (201, 59, 59), True)
+        _agregar_texto(slide, seguimiento.analisis, 0.8, 2.2, 5.7, 1.8, 15)
+        _agregar_texto(slide, "COMENTARIOS DE USUARIOS", 0.8, 4.25, 5.7, 0.3, 11, (201, 59, 59), True)
+        _agregar_texto(slide, seguimiento.comentarios, 0.8, 4.65, 5.7, 1.3, 15)
+        ruta_metrica = os.path.join(app.config["UPLOAD_FOLDER"], os.path.basename(seguimiento.imagen_metrica or ""))
+        if seguimiento.imagen_metrica and os.path.exists(ruta_metrica):
+            slide.shapes.add_picture(ruta_metrica, Inches(7.1), Inches(2.0), width=Inches(5.3), height=Inches(3.8))
+
+    salida = BytesIO()
+    presentacion.save(salida)
+    salida.seek(0)
+    return salida
+
+
 @app.route("/reportes/<int:reporte_id>/presentacion")
-@requiere_rol("Admin")
+@login_required
 def crear_presentacion(reporte_id):
     reporte = ReporteCompetencia.query.get_or_404(reporte_id)
     return render_template("presentacion.html", reporte=reporte)
+
+
+@app.route("/reportes/<int:reporte_id>/presentacion/pptx")
+@login_required
+def descargar_presentacion(reporte_id):
+    reporte = ReporteCompetencia.query.get_or_404(reporte_id)
+    archivo = generar_pptx(reporte)
+    return send_file(
+        archivo,
+        as_attachment=True,
+        download_name=f"analisis_competencia_reporte_{reporte.id}.pptx",
+        mimetype="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    )
 
 
 if __name__ == '__main__':

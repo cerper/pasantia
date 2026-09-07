@@ -14,7 +14,9 @@
                     <h1 class="mt-2 text-4xl font-black">Reporte #{{ reporte.id }}</h1>
                     <p class="mt-2 text-movilnet-muted">Presentación generada desde el borrador editado</p>
                 </div>
-                <button onclick="window.print()" class="rounded-lg bg-movilnet-primary px-4 py-3 text-sm font-bold text-white">Imprimir / PDF</button>
+                <div class="flex flex-wrap justify-end gap-3">
+                    <a href="{{ url_for('descargar_presentacion', reporte_id=reporte.id) }}" class="rounded-lg bg-movilnet-primary px-4 py-3 text-sm font-bold text-white">Descargar PPTX</a>
+                </div>
             </div>
             <section class="grid gap-6 md:grid-cols-2">
                 <article class="rounded-xl bg-movilnet-card p-6 shadow-sm">

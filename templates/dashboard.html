@@ -110,7 +110,18 @@
                                         <i data-lucide="pencil" class="h-4 w-4"></i> 
                                         Editar
                                     </a>
+                                    <a href="{{ url_for('crear_presentacion', reporte_id=reporte.id) }}"
+                                       class="inline-flex items-center gap-2 rounded-lg bg-movilnet-accent px-3 py-2 text-sm font-bold text-white transition hover:bg-movilnet-accent-hover">
+                                        <i data-lucide="presentation" class="h-4 w-4"></i>
+                                        Presentación
+                                    </a>
                                 </div>
+                            {% else %}
+                                <a href="{{ url_for('crear_presentacion', reporte_id=reporte.id) }}"
+                                   class="inline-flex shrink-0 items-center gap-2 rounded-lg border border-movilnet-primary px-3 py-2 text-sm font-bold text-movilnet-primary transition hover:bg-movilnet-primary hover:text-white">
+                                    <i data-lucide="presentation" class="h-4 w-4"></i>
+                                    Presentación
+                                </a>
                             {% endif %}
 
                         </article>
