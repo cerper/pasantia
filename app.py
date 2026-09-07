@@ -146,7 +146,7 @@ class SeguimientoCampana(db.Model):
     )
 
 
-# 4. TABLA PARA MÚLTIPLES IMÁGENES DE CAMPAÑA (1:N)
+#  TABLA PARA MÚLTIPLES IMÁGENES DE CAMPAÑA (1:N)
 class CampanaImagen(db.Model):
     __tablename__ = "campana_imagenes"
 
@@ -283,24 +283,48 @@ def reportes():
             if not isinstance(escenarios, list):
                 raise ValueError("El formato de escenarios no es válido.")
 
-            reporte = ReporteCompetencia(
-                estado=EstadoReporte.PENDIENTE,
-                tipo_reporte=request.form.get("tipo_reporte") or "competencia",
-                situacion_movistar=request.form.get("situacion_movistar", "").strip(),
-                situacion_digitel=request.form.get("situacion_digitel", "").strip(),
-            )
-            db.session.add(reporte)
-
+            situacion_movistar = request.form.get("situacion_movistar", "").strip()
+            situacion_digitel = request.form.get("situacion_digitel", "").strip()
+            escenarios_validos = []
             for escenario in escenarios:
                 if not isinstance(escenario, dict):
                     raise ValueError("Uno de los escenarios no es válido.")
+
                 categoria = str(escenario.get("categoria", "")).strip().upper()
+                analisis = str(escenario.get("analisis", "")).strip()
+                curso_accion = str(escenario.get("curso_accion", "")).strip()
                 if categoria not in EscenarioCategoria.__members__:
                     raise ValueError(f"Categoría de escenario inválida: {categoria}")
+                if not analisis or not curso_accion:
+                    raise ValueError("Cada escenario debe tener análisis y curso de acción.")
+                escenarios_validos.append((categoria, analisis, curso_accion))
+
+            hay_datos_campanas = False
+            for _, clave in (("Movistar", "movistar"), ("Digitel", "digitel")):
+                hay_datos_campanas = hay_datos_campanas or hay_datos_campana(
+                    request.form.get(f"campana_{clave}_analisis", "").strip(),
+                    request.form.get(f"campana_{clave}_comentarios", "").strip(),
+                    request.files.getlist(f"campana_{clave}_imagenes"),
+                    request.files.getlist(f"campana_{clave}_metrica_imagen"),
+                    request.form.get(f"no_campana_{clave}") == "1",
+                )
+
+            if not (situacion_movistar or situacion_digitel or escenarios_validos or hay_datos_campanas):
+                raise ValueError("No se puede guardar un reporte vacío. Completa al menos un campo.")
+
+            reporte = ReporteCompetencia(
+                estado=EstadoReporte.PENDIENTE,
+                tipo_reporte=request.form.get("tipo_reporte") or "competencia",
+                situacion_movistar=situacion_movistar,
+                situacion_digitel=situacion_digitel,
+            )
+            db.session.add(reporte)
+
+            for categoria, analisis, curso_accion in escenarios_validos:
                 reporte.escenarios.append(EscenarioAccion(
                     categoria=EscenarioCategoria[categoria],
-                    analisis=str(escenario.get("analisis", "")).strip(),
-                    curso_accion=str(escenario.get("curso_accion", "")).strip(),
+                    analisis=analisis,
+                    curso_accion=curso_accion,
                 ))
 
             campanas = (
@@ -360,6 +384,107 @@ def reportes():
         return redirect(url_for("reportes"))
 
     return render_template("reportes.html")
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    reportes = ReporteCompetencia.query.order_by(ReporteCompetencia.updated_at.desc()).all()
+    return render_template("dashboard.html", reportes=reportes)
+
+
+@app.route("/reportes/<int:reporte_id>/editar", methods=["GET", "POST"])
+@requiere_rol("Admin")
+def editar_reporte(reporte_id):
+    reporte = ReporteCompetencia.query.get_or_404(reporte_id)
+    if reporte.estado not in (EstadoReporte.BORRADOR, EstadoReporte.PENDIENTE):
+        flash("Este reporte no puede editarse en su estado actual.", "error")
+        return redirect(url_for("dashboard"))
+
+    if request.method == "POST":
+        try:
+            escenarios = json.loads(request.form.get("escenarios_json", "[]"))
+            if not isinstance(escenarios, list):
+                raise ValueError("El formato de escenarios no es válido.")
+
+            imagenes_eliminadas = []
+            ids_imagenes = request.form.getlist("eliminar_imagenes")
+            if ids_imagenes:
+                imagenes = CampanaImagen.query.filter(
+                    CampanaImagen.id.in_(ids_imagenes)
+                ).all()
+                if len(imagenes) != len(set(ids_imagenes)) or any(
+                    imagen.campana.reporte_id != reporte.id for imagen in imagenes
+                ):
+                    raise ValueError("Una de las imágenes seleccionadas no pertenece al reporte.")
+                for imagen in imagenes:
+                    imagenes_eliminadas.append(imagen.ruta_imagen)
+                    db.session.delete(imagen)
+
+            reporte.tipo_reporte = request.form.get("tipo_reporte", "competencia").strip()
+            reporte.situacion_movistar = request.form.get("situacion_movistar", "").strip()
+            reporte.situacion_digitel = request.form.get("situacion_digitel", "").strip()
+            reporte.escenarios.clear()
+
+            for escenario in escenarios:
+                categoria = str(escenario.get("categoria", "")).strip().upper()
+                if categoria not in EscenarioCategoria.__members__:
+                    raise ValueError(f"Categoría de escenario inválida: {categoria}")
+                reporte.escenarios.append(EscenarioAccion(
+                    categoria=EscenarioCategoria[categoria],
+                    analisis=str(escenario.get("analisis", "")).strip(),
+                    curso_accion=str(escenario.get("curso_accion", "")).strip(),
+                ))
+
+            for operadora, clave in (("Movistar", "movistar"), ("Digitel", "digitel")):
+                seguimiento = next((item for item in reporte.seguimientos if item.operadora == operadora), None)
+                if seguimiento is None:
+                    seguimiento = SeguimientoCampana(operadora=operadora)
+                    reporte.seguimientos.append(seguimiento)
+
+                if request.form.get(f"eliminar_metrica_{clave}") == "1":
+                    if seguimiento.imagen_metrica:
+                        imagenes_eliminadas.append(seguimiento.imagen_metrica)
+                    seguimiento.imagen_metrica = None
+
+                seguimiento.analisis = request.form.get(f"campana_{clave}_analisis", "").strip()
+                seguimiento.comentarios = request.form.get(f"campana_{clave}_comentarios", "").strip()
+
+                for archivo in request.files.getlist(f"campana_{clave}_imagenes"):
+                    resultado = guardar_imagen(archivo)
+                    if resultado:
+                        ruta, nombre_original = resultado
+                        seguimiento.imagenes.append(CampanaImagen(
+                            ruta_imagen=ruta,
+                            nombre_original=nombre_original,
+                        ))
+                for archivo in request.files.getlist(f"campana_{clave}_metrica_imagen"):
+                    resultado = guardar_imagen(archivo)
+                    if resultado:
+                        seguimiento.imagen_metrica = resultado[0]
+                        break
+
+            reporte.estado = EstadoReporte.BORRADOR
+            reporte.updated_at = datetime.utcnow()
+            db.session.commit()
+            for ruta in imagenes_eliminadas:
+                ruta_archivo = os.path.join(app.config["UPLOAD_FOLDER"], os.path.basename(ruta))
+                if os.path.exists(ruta_archivo):
+                    os.remove(ruta_archivo)
+            flash("Los cambios del borrador se guardaron correctamente.", "success")
+            return redirect(url_for("editar_reporte", reporte_id=reporte.id, guardado=1))
+        except (ValueError, json.JSONDecodeError, SQLAlchemyError, OSError) as error:
+            db.session.rollback()
+            flash(str(error) if isinstance(error, ValueError) else "No se pudo guardar la edición del reporte.", "error")
+
+    seguimientos = {item.operadora.lower(): item for item in reporte.seguimientos}
+    return render_template("editar_reporte.html", reporte=reporte, seguimientos=seguimientos, guardado=request.args.get("guardado") == "1")
+
+
+@app.route("/reportes/<int:reporte_id>/presentacion")
+@requiere_rol("Admin")
+def crear_presentacion(reporte_id):
+    reporte = ReporteCompetencia.query.get_or_404(reporte_id)
+    return render_template("presentacion.html", reporte=reporte)
 
 
 if __name__ == '__main__':

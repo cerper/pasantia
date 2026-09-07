@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Movilnet Intelligence</title>
+    
+    <!-- Hojas de estilo y Scripts externos -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='dist/output.css') }}">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="min-h-screen bg-movilnet-bg text-movilnet-dark">
+
+    <!-- Encabezado Principal -->
+    <header class="border-b border-movilnet-input-border bg-movilnet-card">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 md:px-10">
+            
+            <!-- Branding / Logo -->
+            <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-movilnet-primary text-sm font-black text-white">
+                   <a href="/"> m</a>
+                </div>
+                <div>
+                    <p class="text-xl font-black tracking-tight text-movilnet-primary">movilnet</p>
+                    <p class="text-[0.6rem] font-semibold uppercase tracking-[0.24em] text-movilnet-muted">
+                        intelligence dashboard
+                    </p>
+                </div>
+            </div>
+
+            <!-- Usuario Activo -->
+            <div class="flex items-center gap-3 text-sm text-movilnet-muted">
+                <span>{{ current_user.nombre }} {{ current_user.apellido }}</span>
+                <i data-lucide="user-circle" class="h-6 w-6 text-movilnet-primary"></i>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="mx-auto max-w-7xl space-y-8 px-6 py-10 md:px-10">
+        
+        <!-- Encabezado de la Sección -->
+        <div class="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-[0.24em] text-movilnet-primary">
+                    Centro de control
+                </p>
+                <h1 class="mt-2 text-4xl font-black tracking-tight text-movilnet-dark">
+                    Reportes de competencia
+                </h1>
+                <p class="mt-2 text-movilnet-muted">
+                    Consulta el estado y prepara los borradores para presentación.
+                </p>
+            </div>
+
+            <a href="{{ url_for('reportes') }}" 
+               class="inline-flex items-center justify-center gap-2 rounded-lg bg-movilnet-primary px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-movilnet-primary-hover">
+                <i data-lucide="plus" class="h-4 w-4"></i> 
+                Nuevo reporte
+            </a>
+        </div>
+
+        <!-- Mensajes Flash de Jinja2 -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="rounded-lg border border-movilnet-input-border bg-movilnet-card px-4 py-3 text-sm {% if category == 'error' %}text-red-700{% else %}text-movilnet-green{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <!-- Listado de Reportes -->
+        <section class="overflow-hidden rounded-xl border border-movilnet-input-border bg-movilnet-card shadow-sm">
+            
+            <div class="flex items-center justify-between border-b border-movilnet-input-border px-6 py-4">
+                <div>
+                    <h2 class="font-bold">Reportes almacenados</h2>
+                    <p class="text-xs text-movilnet-muted">{{ reportes|length }} registro(s)</p>
+                </div>
+                <i data-lucide="layers" class="h-5 w-5 text-movilnet-primary"></i>
+            </div>
+
+            {% if reportes %}
+                <div class="divide-y divide-movilnet-input-border">
+                    {% for reporte in reportes %}
+                        <article class="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between">
+                            
+                            <!-- Detalle del Reporte -->
+                            <div class="min-w-0">
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <h3 class="font-bold">Reporte #{{ reporte.id }}</h3>
+                                    <span class="rounded-full px-3 py-1 text-xs font-bold {% if reporte.estado.value == 'Borrador' %}bg-movilnet-accent/10 text-movilnet-primary{% elif reporte.estado.value == 'Aprobado' %}bg-movilnet-green/10 text-green-700{% else %}bg-movilnet-bg text-movilnet-muted{% endif %}">
+                                        {{ reporte.estado.value }}
+                                    </span>
+                                </div>
+                                <p class="mt-1 text-sm text-movilnet-muted">
+                                    {{ reporte.tipo_reporte|capitalize }} · Actualizado {{ reporte.updated_at.strftime('%d/%m/%Y %H:%M') }}
+                                </p>
+                                <p class="mt-2 truncate text-sm text-movilnet-dark">
+                                    {{ reporte.situacion_movistar or 'Sin situación de Movistar registrada.' }}
+                                </p>
+                            </div>
+
+                            <!-- Acciones (Admin) -->
+                            {% if current_user.tiene_rol('Admin') and reporte.estado.value in ('Borrador', 'Pendiente') %}
+                                <div class="flex shrink-0 flex-wrap gap-2">
+                                    <a href="{{ url_for('editar_reporte', reporte_id=reporte.id) }}" 
+                                       class="inline-flex items-center gap-2 rounded-lg border border-movilnet-primary px-3 py-2 text-sm font-bold text-movilnet-primary transition hover:bg-movilnet-primary hover:text-white">
+                                        <i data-lucide="pencil" class="h-4 w-4"></i> 
+                                        Editar
+                                    </a>
+                                </div>
+                            {% endif %}
+
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="px-6 py-12 text-center text-sm text-movilnet-muted">
+                    Todavía no hay reportes almacenados.
+                </div>
+            {% endif %}
+
+        </section>
+
+    </main>
+
+    <!-- Inicialización de Iconos Lucide -->
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

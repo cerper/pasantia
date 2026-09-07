@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Presentación - Reporte #{{ reporte.id }}</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='dist/output.css') }}">
+    </head>
+    <body class="min-h-screen bg-movilnet-bg text-movilnet-dark">
+        <main class="mx-auto max-w-5xl px-6 py-10 md:px-10">
+            <div class="mb-10 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-[0.24em] text-movilnet-primary">Movilnet intelligence</p>
+                    <h1 class="mt-2 text-4xl font-black">Reporte #{{ reporte.id }}</h1>
+                    <p class="mt-2 text-movilnet-muted">Presentación generada desde el borrador editado</p>
+                </div>
+                <button onclick="window.print()" class="rounded-lg bg-movilnet-primary px-4 py-3 text-sm font-bold text-white">Imprimir / PDF</button>
+            </div>
+            <section class="grid gap-6 md:grid-cols-2">
+                <article class="rounded-xl bg-movilnet-card p-6 shadow-sm">
+                    <h2 class="mb-3 font-bold text-movilnet-primary">Movistar</h2>
+                    <p class="whitespace-pre-line text-sm leading-relaxed">{{ reporte.situacion_movistar or 'Sin información.' }}</p>
+                </article>
+                <article class="rounded-xl bg-movilnet-card p-6 shadow-sm">
+                    <h2 class="mb-3 font-bold text-movilnet-primary">Digitel</h2>
+                    <p class="whitespace-pre-line text-sm leading-relaxed">{{ reporte.situacion_digitel or 'Sin información.' }}</p>
+                </article>
+            </section>
+            <section class="mt-6 rounded-xl bg-movilnet-card p-6 shadow-sm">
+                <h2 class="mb-4 text-xl font-bold">Escenarios estratégicos</h2>
+                <div class="space-y-5">
+                    {% for escenario in reporte.escenarios %}
+                        <article class="border-l-4 border-movilnet-accent pl-4">
+                            <p class="text-xs font-bold uppercase tracking-wider text-movilnet-primary">{{ escenario.categoria.value }}</p>
+                            <p class="mt-2 whitespace-pre-line text-sm">{{ escenario.analisis or 'Sin análisis.' }}</p>
+                            <p class="mt-2 whitespace-pre-line text-sm text-movilnet-muted">{{ escenario.curso_accion or 'Sin curso de acción.' }}</p>
+                        </article>
+                    {% else %}
+                        <p class="text-sm text-movilnet-muted">Sin escenarios registrados.</p>
+                    {% endfor %}
+                </div>
+            </section>
+        </main>
+    </body>
+</html>

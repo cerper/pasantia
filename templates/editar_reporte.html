@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Editar reporte #{{ reporte.id }} | Movilnet Intelligence</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='dist/output.css') }}">
+	<script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="min-h-screen bg-movilnet-bg text-movilnet-dark">
+	<header class="border-b border-movilnet-input-border bg-movilnet-card">
+		<div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 md:px-10">
+			<a href="{{ url_for('dashboard') }}" class="flex items-center gap-3">
+				<span class="flex h-10 w-10 items-center justify-center rounded-full bg-movilnet-primary text-sm font-black text-white">m</span>
+				<span>
+					<span class="block text-xl font-black tracking-tight text-movilnet-primary">movilnet</span>
+					<span class="block text-[0.6rem] font-semibold uppercase tracking-[0.24em] text-movilnet-muted">intelligence</span>
+				</span>
+			</a>
+			<a href="{{ url_for('dashboard') }}" class="inline-flex items-center gap-2 text-sm font-bold text-movilnet-primary hover:text-movilnet-primary-hover">
+				<i data-lucide="arrow-left" class="h-4 w-4"></i> Dashboard
+			</a>
+		</div>
+	</header>
+
+	<main class="mx-auto max-w-7xl space-y-8 px-6 py-10 md:px-10">
+		<div class="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+			<div>
+				<p class="text-xs font-bold uppercase tracking-[0.24em] text-movilnet-primary">Edición administrativa</p>
+				<h1 class="mt-2 text-4xl font-black tracking-tight text-movilnet-dark">Editar reporte #{{ reporte.id }}</h1>
+				<p class="mt-2 text-movilnet-muted">Actualiza el contenido del borrador y guarda los cambios en la base de datos.</p>
+			</div>
+			{% if guardado %}
+			<a href="{{ url_for('crear_presentacion', reporte_id=reporte.id) }}" class="inline-flex items-center justify-center gap-2 rounded-lg bg-movilnet-accent px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-movilnet-accent-hover">
+				<i data-lucide="presentation" class="h-4 w-4"></i> Crear presentación
+			</a>
+			{% endif %}
+		</div>
+
+		{% with messages = get_flashed_messages(with_categories=true) %}
+			{% for category, message in messages %}
+			<div class="rounded-lg border border-movilnet-input-border bg-movilnet-card px-4 py-3 text-sm {% if category == 'error' %}text-red-700{% else %}text-movilnet-green{% endif %}">{{ message }}</div>
+			{% endfor %}
+		{% endwith %}
+
+		<form action="{{ url_for('editar_reporte', reporte_id=reporte.id) }}" method="post" enctype="multipart/form-data" id="form-editar" class="space-y-6">
+			<section class="rounded-xl border border-movilnet-input-border bg-movilnet-card p-6 shadow-sm">
+				<div class="mb-5 flex items-center gap-3 border-b border-movilnet-input-border pb-4">
+					<i data-lucide="file-pen-line" class="h-5 w-5 text-movilnet-primary"></i>
+					<div><h2 class="font-bold">Información general</h2><p class="text-sm text-movilnet-muted">Datos principales del reporte.</p></div>
+				</div>
+				<label for="tipo_reporte" class="block text-xs font-bold uppercase tracking-wider text-movilnet-muted">Tipo de reporte</label>
+				<select id="tipo_reporte" name="tipo_reporte" class="mt-2 w-full rounded-lg border border-movilnet-input-border bg-movilnet-input px-3 py-3 text-sm focus:border-movilnet-primary focus:outline-none focus:ring-2 focus:ring-movilnet-primary/20">
+					<option value="competencia" {% if reporte.tipo_reporte == 'competencia' %}selected{% endif %}>Competencia</option>
+				</select>
+			</section>
+
+			<section class="rounded-xl border border-movilnet-input-border bg-movilnet-card p-6 shadow-sm">
+				<div class="mb-5 flex items-center gap-3 border-b border-movilnet-input-border pb-4">
+					<i data-lucide="layout-grid" class="h-5 w-5 text-movilnet-primary"></i>
+					<div><h2 class="font-bold">Situación actual</h2><p class="text-sm text-movilnet-muted">Edita el análisis de cada operadora.</p></div>
+				</div>
+				<div class="grid gap-5 md:grid-cols-2">
+					<label for="situacion_movistar" class="text-xs font-bold uppercase tracking-wider text-movilnet-muted">Movistar<textarea id="situacion_movistar" name="situacion_movistar" rows="6" class="mt-2 w-full resize-y rounded-lg border border-movilnet-input-border bg-movilnet-input p-3 text-sm font-normal normal-case tracking-normal text-movilnet-dark focus:border-movilnet-primary focus:outline-none focus:ring-2 focus:ring-movilnet-primary/20">{{ reporte.situacion_movistar or '' }}</textarea></label>
+					<label for="situacion_digitel" class="text-xs font-bold uppercase tracking-wider text-movilnet-muted">Digitel<textarea id="situacion_digitel" name="situacion_digitel" rows="6" class="mt-2 w-full resize-y rounded-lg border border-movilnet-input-border bg-movilnet-input p-3 text-sm font-normal normal-case tracking-normal text-movilnet-dark focus:border-movilnet-primary focus:outline-none focus:ring-2 focus:ring-movilnet-primary/20">{{ reporte.situacion_digitel or '' }}</textarea></label>
+				</div>
+			</section>
+
+			<section class="rounded-xl border border-movilnet-input-border bg-movilnet-card p-6 shadow-sm">
+				<div class="mb-5 flex items-center justify-between border-b border-movilnet-input-border pb-4">
+					<div class="flex items-center gap-3"><i data-lucide="trending-up" class="h-5 w-5 text-movilnet-primary"></i><div><h2 class="font-bold">Escenarios y cursos de acción</h2><p class="text-sm text-movilnet-muted">Edita los escenarios existentes del borrador.</p></div></div>
+					<span class="rounded-full bg-movilnet-primary/10 px-3 py-1 text-xs font-bold text-movilnet-primary">{{ reporte.escenarios|length }} escenario(s)</span>
+				</div>
+				<div class="space-y-4" id="escenarios-container">
+					{% for escenario in reporte.escenarios %}
+					<article class="escenario-item rounded-lg border border-movilnet-input-border bg-movilnet-input p-4">
+						<div class="mb-4 flex items-center justify-between"><h3 class="text-sm font-bold text-movilnet-primary">Escenario {{ loop.index }}</h3><button type="button" class="remove-escenario text-movilnet-muted transition hover:text-red-600" title="Eliminar escenario"><i data-lucide="trash-2" class="h-4 w-4"></i></button></div>
+						<div class="grid gap-4 md:grid-cols-3">
+							<label class="text-xs font-bold uppercase tracking-wider text-movilnet-muted">Categoría<select class="escenario-categoria mt-2 w-full rounded-lg border border-movilnet-input-border bg-movilnet-card px-3 py-3 text-sm font-normal normal-case tracking-normal focus:border-movilnet-primary focus:outline-none"><option value="NEUTRAL" {% if escenario.categoria.name == 'NEUTRAL' %}selected{% endif %}>Neutral</option><option value="FAVORABLE" {% if escenario.categoria.name == 'FAVORABLE' %}selected{% endif %}>Favorable</option><option value="DESFAVORABLE" {% if escenario.categoria.name == 'DESFAVORABLE' %}selected{% endif %}>Desfavorable</option></select></label>
+							<label class="text-xs font-bold uppercase tracking-wider text-movilnet-muted md:col-span-2">Análisis<textarea class="escenario-analisis mt-2 w-full rounded-lg border border-movilnet-input-border bg-movilnet-card p-3 text-sm font-normal normal-case tracking-normal focus:border-movilnet-primary focus:outline-none">{{ escenario.analisis or '' }}</textarea></label>
+						</div>
+						<label class="mt-4 block text-xs font-bold uppercase tracking-wider text-movilnet-muted">Curso de acción<textarea class="escenario-curso mt-2 w-full rounded-lg border border-movilnet-input-border bg-movilnet-card p-3 text-sm font-normal normal-case tracking-normal focus:border-movilnet-primary focus:outline-none">{{ escenario.curso_accion or '' }}</textarea></label>
+					</article>
+					{% else %}<p id="sin-escenarios" class="rounded-lg border border-dashed border-movilnet-input-border p-6 text-center text-sm text-movilnet-muted">No hay escenarios registrados en este borrador.</p>{% endfor %}
+				</div>
+				<button type="button" id="add-escenario" class="mt-4 inline-flex items-center gap-2 rounded-lg border border-movilnet-primary px-4 py-2.5 text-sm font-bold text-movilnet-primary transition hover:bg-movilnet-primary hover:text-white"><i data-lucide="plus" class="h-4 w-4"></i> Agregar escenario</button>
+				<input type="hidden" name="escenarios_json" id="escenarios_json" value="[]">
+			</section>
+
+			{% for clave, nombre in [('movistar', 'Movistar'), ('digitel', 'Digitel')] %}
+			{% set seguimiento = seguimientos.get(clave) %}
+			<section class="rounded-xl border border-movilnet-input-border bg-movilnet-card p-6 shadow-sm">
+				<div class="mb-5 flex items-center gap-3 border-b border-movilnet-input-border pb-4"><i data-lucide="megaphone" class="h-5 w-5 text-movilnet-primary"></i><div><h2 class="font-bold">Seguimiento de campaña · {{ nombre }}</h2><p class="text-sm text-movilnet-muted">Actualiza el análisis, comentarios o agrega imágenes.</p></div></div>
+				<div class="grid gap-5 md:grid-cols-2">
+					<label class="text-xs font-bold uppercase tracking-wider text-movilnet-muted">Análisis de campaña<textarea name="campana_{{ clave }}_analisis" rows="5" class="mt-2 w-full rounded-lg border border-movilnet-input-border bg-movilnet-input p-3 text-sm font-normal normal-case tracking-normal focus:border-movilnet-primary focus:outline-none">{{ seguimiento.analisis if seguimiento else '' }}</textarea></label>
+					<label class="text-xs font-bold uppercase tracking-wider text-movilnet-muted">Comentarios de usuarios<textarea name="campana_{{ clave }}_comentarios" rows="5" class="mt-2 w-full rounded-lg border border-movilnet-input-border bg-movilnet-input p-3 text-sm font-normal normal-case tracking-normal focus:border-movilnet-primary focus:outline-none">{{ seguimiento.comentarios if seguimiento else '' }}</textarea></label>
+					<label class="rounded-lg border-2 border-dashed border-movilnet-input-border bg-movilnet-input p-4 text-xs font-bold uppercase tracking-wider text-movilnet-muted">Agregar imágenes de campaña<input type="file" name="campana_{{ clave }}_imagenes" accept="image/*" multiple class="mt-3 block w-full text-sm font-normal normal-case tracking-normal"></label>
+					<label class="rounded-lg border-2 border-dashed border-movilnet-input-border bg-movilnet-input p-4 text-xs font-bold uppercase tracking-wider text-movilnet-muted">Reemplazar imagen de métricas<input type="file" name="campana_{{ clave }}_metrica_imagen" accept="image/*" class="mt-3 block w-full text-sm font-normal normal-case tracking-normal"></label>
+				</div>
+				{% if seguimiento and (seguimiento.imagenes or seguimiento.imagen_metrica) %}
+				<div class="mt-5 border-t border-movilnet-input-border pt-5">
+					<div class="mb-3 flex items-center gap-2">
+						<i data-lucide="images" class="h-4 w-4 text-movilnet-primary"></i>
+						<h3 class="text-xs font-bold uppercase tracking-wider text-movilnet-muted">Imágenes almacenadas</h3>
+					</div>
+					<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+						{% for imagen in seguimiento.imagenes %}
+						<div class="overflow-hidden rounded-lg border border-movilnet-input-border bg-movilnet-input">
+						<a href="{{ url_for('static', filename=imagen.ruta_imagen) }}" target="_blank" rel="noopener" class="group block">
+							<img src="{{ url_for('static', filename=imagen.ruta_imagen) }}" alt="Imagen de campaña {{ nombre }}" class="h-36 w-full object-cover transition duration-200 group-hover:scale-105">
+						</a>
+						<label class="flex items-center gap-2 border-t border-movilnet-input-border px-3 py-2 text-xs text-red-700"><input type="checkbox" name="eliminar_imagenes" value="{{ imagen.id }}" class="accent-red-600"> Eliminar esta imagen</label>
+						<span class="block truncate px-3 pb-2 text-xs text-movilnet-muted" title="{{ imagen.nombre_original or 'Imagen de campaña' }}">{{ imagen.nombre_original or 'Imagen de campaña' }}</span>
+						</div>
+						{% endfor %}
+						{% if seguimiento.imagen_metrica %}
+						<div class="overflow-hidden rounded-lg border border-movilnet-accent/40 bg-movilnet-input">
+						<a href="{{ url_for('static', filename=seguimiento.imagen_metrica) }}" target="_blank" rel="noopener" class="group block">
+							<img src="{{ url_for('static', filename=seguimiento.imagen_metrica) }}" alt="Imagen de métricas {{ nombre }}" class="h-36 w-full object-cover transition duration-200 group-hover:scale-105">
+						</a>
+						<label class="flex items-center gap-2 border-t border-movilnet-accent/40 px-3 py-2 text-xs text-red-700"><input type="checkbox" name="eliminar_metrica_{{ clave }}" value="1" class="accent-red-600"> Eliminar métrica</label>
+						<span class="block px-3 pb-2 text-xs font-bold text-movilnet-primary">Imagen de métricas</span>
+						</div>
+						{% endif %}
+					</div>
+				</div>
+				{% endif %}
+			</section>
+			{% endfor %}
+
+			<div class="flex flex-col-reverse justify-end gap-3 border-t border-movilnet-input-border pt-6 sm:flex-row">
+				<a href="{{ url_for('dashboard') }}" class="inline-flex items-center justify-center rounded-lg border border-movilnet-input-border bg-movilnet-card px-5 py-3 text-sm font-bold text-movilnet-muted hover:bg-movilnet-bg">Cancelar</a>
+				<button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg bg-movilnet-primary px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-movilnet-primary-hover"><i data-lucide="save" class="h-4 w-4"></i> Guardar cambios</button>
+			</div>
+		</form>
+	</main>
+
+	<template id="escenario-template"><article class="escenario-item rounded-lg border border-movilnet-input-border bg-movilnet-input p-4"><div class="mb-4 flex items-center justify-between"><h3 class="text-sm font-bold text-movilnet-primary">Nuevo escenario</h3><button type="button" class="remove-escenario text-movilnet-muted transition hover:text-red-600" title="Eliminar escenario"><i data-lucide="trash-2" class="h-4 w-4"></i></button></div><div class="grid gap-4 md:grid-cols-3"><label class="text-xs font-bold uppercase tracking-wider text-movilnet-muted">Categoría<select class="escenario-categoria mt-2 w-full rounded-lg border border-movilnet-input-border bg-movilnet-card px-3 py-3 text-sm font-normal normal-case tracking-normal"><option value="NEUTRAL">Neutral</option><option value="FAVORABLE">Favorable</option><option value="DESFAVORABLE">Desfavorable</option></select></label><label class="text-xs font-bold uppercase tracking-wider text-movilnet-muted md:col-span-2">Análisis<textarea class="escenario-analisis mt-2 w-full rounded-lg border border-movilnet-input-border bg-movilnet-card p-3 text-sm font-normal normal-case tracking-normal focus:border-movilnet-primary focus:outline-none"></textarea></label></div><label class="mt-4 block text-xs font-bold uppercase tracking-wider text-movilnet-muted">Curso de acción<textarea class="escenario-curso mt-2 w-full rounded-lg border border-movilnet-input-border bg-movilnet-card p-3 text-sm font-normal normal-case tracking-normal focus:border-movilnet-primary focus:outline-none"></textarea></label></article></template>
+	<script>
+		const form = document.querySelector('#form-editar');
+		const escenariosContainer = document.querySelector('#escenarios-container');
+		const escenarioTemplate = document.querySelector('#escenario-template');
+
+		function actualizarNumeros() {
+			escenariosContainer.querySelectorAll('.escenario-item h3').forEach((titulo, indice) => {
+				titulo.textContent = `Escenario ${indice + 1}`;
+			});
+			const vacio = document.querySelector('#sin-escenarios');
+			if (vacio) vacio.classList.toggle('hidden', escenariosContainer.querySelectorAll('.escenario-item').length > 0);
+		}
+
+		document.querySelector('#add-escenario').addEventListener('click', () => {
+			escenariosContainer.appendChild(escenarioTemplate.content.cloneNode(true));
+			lucide.createIcons();
+			actualizarNumeros();
+		});
+
+		escenariosContainer.addEventListener('click', (event) => {
+			const button = event.target.closest('.remove-escenario');
+			if (button) {
+				button.closest('.escenario-item').remove();
+				actualizarNumeros();
+			}
+		});
+
+		form.addEventListener('submit', () => {
+			const escenarios = [...escenariosContainer.querySelectorAll('.escenario-item')].map((item) => ({
+				categoria: item.querySelector('.escenario-categoria').value,
+				analisis: item.querySelector('.escenario-analisis').value,
+				curso_accion: item.querySelector('.escenario-curso').value,
+			}));
+			document.querySelector('#escenarios_json').value = JSON.stringify(escenarios);
+		});
+
+		actualizarNumeros();
+		lucide.createIcons();
+	</script>
+</body>
+</html>
