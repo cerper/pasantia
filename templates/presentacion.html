@@ -42,6 +42,34 @@
                     {% endfor %}
                 </div>
             </section>
+            <section class="mt-6 rounded-xl bg-movilnet-card p-6 shadow-sm">
+                <h2 class="mb-4 text-xl font-bold">Seguimiento de campañas</h2>
+                <div class="space-y-8">
+                    {% for seguimiento in reporte.seguimientos %}
+                        <article>
+                            <h3 class="font-bold text-movilnet-primary">{{ seguimiento.operadora }}</h3>
+                            <p class="mt-2 whitespace-pre-line text-sm">{{ seguimiento.analisis or 'Sin análisis.' }}</p>
+                            <p class="mt-2 whitespace-pre-line text-sm text-movilnet-muted">{{ seguimiento.comentarios or 'Sin comentarios.' }}</p>
+                            {% if seguimiento.imagenes or seguimiento.imagen_metrica %}
+                                <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                                    {% for imagen in seguimiento.imagenes %}
+                                        <a href="{{ url_for('static', filename=imagen.ruta_imagen) }}" target="_blank" rel="noopener">
+                                            <img src="{{ url_for('static', filename=imagen.ruta_imagen) }}" alt="Imagen de campaña {{ seguimiento.operadora }}" class="h-40 w-full rounded-lg object-cover">
+                                        </a>
+                                    {% endfor %}
+                                    {% if seguimiento.imagen_metrica %}
+                                        <a href="{{ url_for('static', filename=seguimiento.imagen_metrica) }}" target="_blank" rel="noopener">
+                                            <img src="{{ url_for('static', filename=seguimiento.imagen_metrica) }}" alt="Imagen de métricas {{ seguimiento.operadora }}" class="h-40 w-full rounded-lg object-cover">
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </article>
+                    {% else %}
+                        <p class="text-sm text-movilnet-muted">Sin seguimientos de campaña registrados.</p>
+                    {% endfor %}
+                </div>
+            </section>
         </main>
     </body>
 </html>

@@ -1,0 +1,9 @@
+# Archivo de variables de entorno
+.env
+
+# Archivos compilados y temporales de Python
+__pycache__/
+*.pyc
+
+# Archivos subidos dinámicamente
+static/uploads/*

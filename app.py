@@ -16,12 +16,20 @@ import enum
 from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.util import Inches, Pt
+from dotenv import load_dotenv
+
+# 1. Cargar dotenv de primero
+load_dotenv()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '1234'
 
 # Conexión a MariaDB
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mariadb+mariadbconnector://david:1234@localhost:3306/proyecto_movilnet'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'clave_por_defecto_desarrollo')
+
+# Opción A: Usando la URL completa desde el .env
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', "jfif"}
@@ -550,9 +558,38 @@ def generar_pptx(reporte):
         _agregar_texto(slide, seguimiento.analisis, 0.8, 2.2, 5.7, 1.8, 15)
         _agregar_texto(slide, "COMENTARIOS DE USUARIOS", 0.8, 4.25, 5.7, 0.3, 11, (201, 59, 59), True)
         _agregar_texto(slide, seguimiento.comentarios, 0.8, 4.65, 5.7, 1.3, 15)
-        ruta_metrica = os.path.join(app.config["UPLOAD_FOLDER"], os.path.basename(seguimiento.imagen_metrica or ""))
-        if seguimiento.imagen_metrica and os.path.exists(ruta_metrica):
-            slide.shapes.add_picture(ruta_metrica, Inches(7.1), Inches(2.0), width=Inches(5.3), height=Inches(3.8))
+        rutas_imagenes = [
+            os.path.join(app.config["UPLOAD_FOLDER"], os.path.basename(imagen.ruta_imagen))
+            for imagen in seguimiento.imagenes
+        ]
+        if seguimiento.imagen_metrica:
+            rutas_imagenes.append(
+                os.path.join(app.config["UPLOAD_FOLDER"], os.path.basename(seguimiento.imagen_metrica))
+            )
+        rutas_imagenes = [ruta for ruta in rutas_imagenes if os.path.exists(ruta)]
+
+        for inicio_grupo in range(0, len(rutas_imagenes), 4):
+            grupo = rutas_imagenes[inicio_grupo:inicio_grupo + 4]
+            if inicio_grupo:
+                slide = presentacion.slides.add_slide(layout)
+                _estilo_slide(
+                    slide,
+                    f"Imágenes de campaña: {seguimiento.operadora}",
+                    "Imágenes adicionales del seguimiento",
+                )
+            for indice, ruta_imagen in enumerate(grupo):
+                fila, columna = divmod(indice, 2)
+                left = 7.1 + columna * 2.75 if inicio_grupo == 0 else 1.0 + columna * 6.0
+                top = 2.0 + fila * 2.05 if inicio_grupo == 0 else 1.75 + fila * 2.55
+                width = 2.5 if inicio_grupo == 0 else 5.4
+                height = 1.8 if inicio_grupo == 0 else 2.3
+                slide.shapes.add_picture(
+                    ruta_imagen,
+                    Inches(left),
+                    Inches(top),
+                    width=Inches(width),
+                    height=Inches(height),
+                )
 
     salida = BytesIO()
     presentacion.save(salida)
