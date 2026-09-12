@@ -1,40 +1,25 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Editar reporte #{{ reporte.id }} | Movilnet Intelligence</title>
-	<link rel="stylesheet" href="{{ url_for('static', filename='dist/output.css') }}">
-	<script src="https://unpkg.com/lucide@latest"></script>
-</head>
-<body class="min-h-screen bg-movilnet-bg text-movilnet-dark">
-	<header class="border-b border-movilnet-input-border bg-movilnet-card">
-		<div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 md:px-10">
-			<a href="{{ url_for('dashboard') }}" class="flex items-center gap-3">
-				<span class="flex h-10 w-10 items-center justify-center rounded-full bg-movilnet-primary text-sm font-black text-white">m</span>
-				<span>
-					<span class="block text-xl font-black tracking-tight text-movilnet-primary">movilnet</span>
-					<span class="block text-[0.6rem] font-semibold uppercase tracking-[0.24em] text-movilnet-muted">intelligence</span>
-				</span>
-			</a>
-			<a href="{{ url_for('dashboard') }}" class="inline-flex items-center gap-2 text-sm font-bold text-movilnet-primary hover:text-movilnet-primary-hover">
-				<i data-lucide="arrow-left" class="h-4 w-4"></i> Dashboard
-			</a>
-		</div>
-	</header>
+{% extends "layout.html" %}
 
-	<main class="mx-auto max-w-7xl space-y-8 px-6 py-10 md:px-10">
-		<div class="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-			<div>
-				<p class="text-xs font-bold uppercase tracking-[0.24em] text-movilnet-primary">Edición administrativa</p>
-				<h1 class="mt-2 text-4xl font-black tracking-tight text-movilnet-dark">Editar reporte #{{ reporte.id }}</h1>
-				<p class="mt-2 text-movilnet-muted">Actualiza el contenido del borrador y guarda los cambios en la base de datos.</p>
+{% block title %}Editar reporte #{{ reporte.id }} | Movilnet Intelligence{% endblock %}
+
+{% block content %}
+	<main class="mx-auto max-w-5xl px-6 py-10 md:px-10">
+            <div class="mb-10 flex items-center justify-between">
+                <div>
+                    <p class="text-xs mt-4 font-bold uppercase tracking-[0.24em] text-movilnet-primary">Movilnet intelligence</p>
+                    <h1 class="mt-2 text-4xl font-black">Reporte #{{ reporte.id }}</h1>
+                    <p class="mt-2 text-movilnet-muted">Presentación generada desde el borrador editado</p>
+                </div>
+                <div class="flex flex-wrap justify-end gap-3">
+                  <a href="{{ url_for('gestion_reportes') }}" class="rounded-lg bg-movilnet-primary px-4 py-3 text-sm font-bold text-white">Gestion Reportes</a>
+                </div>
+            </div>
+				{% if guardado %}
+				<a href="{{ url_for('crear_presentacion', reporte_id=reporte.id) }}" class="inline-flex items-center justify-center gap-2 rounded-lg bg-movilnet-accent px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-movilnet-accent-hover">
+					<i data-lucide="presentation" class="h-4 w-4"></i> Crear presentación
+				</a>
+				{% endif %}
 			</div>
-			{% if guardado %}
-			<a href="{{ url_for('crear_presentacion', reporte_id=reporte.id) }}" class="inline-flex items-center justify-center gap-2 rounded-lg bg-movilnet-accent px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-movilnet-accent-hover">
-				<i data-lucide="presentation" class="h-4 w-4"></i> Crear presentación
-			</a>
-			{% endif %}
 		</div>
 
 		{% with messages = get_flashed_messages(with_categories=true) %}
@@ -44,7 +29,7 @@
 		{% endwith %}
 
 		<form action="{{ url_for('editar_reporte', reporte_id=reporte.id) }}" method="post" enctype="multipart/form-data" id="form-editar" class="space-y-6">
-			<section class="rounded-xl border border-movilnet-input-border bg-movilnet-card p-6 shadow-sm">
+			<section class="rounded-xl mt-4 border border-movilnet-input-border bg-movilnet-card p-6 shadow-sm">
 				<div class="mb-5 flex items-center gap-3 border-b border-movilnet-input-border pb-4">
 					<i data-lucide="file-pen-line" class="h-5 w-5 text-movilnet-primary"></i>
 					<div><h2 class="font-bold">Información general</h2><p class="text-sm text-movilnet-muted">Datos principales del reporte.</p></div>
@@ -129,13 +114,15 @@
 			{% endfor %}
 
 			<div class="flex flex-col-reverse justify-end gap-3 border-t border-movilnet-input-border pt-6 sm:flex-row">
-				<a href="{{ url_for('dashboard') }}" class="inline-flex items-center justify-center rounded-lg border border-movilnet-input-border bg-movilnet-card px-5 py-3 text-sm font-bold text-movilnet-muted hover:bg-movilnet-bg">Cancelar</a>
+				<a href="{{ url_for('gestion_reportes') }}" class="inline-flex items-center justify-center rounded-lg border border-movilnet-input-border bg-movilnet-card px-5 py-3 text-sm font-bold text-movilnet-muted hover:bg-movilnet-bg">Cancelar</a>
 				<button type="submit" class="inline-flex items-center justify-center gap-2 rounded-lg bg-movilnet-primary px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-movilnet-primary-hover"><i data-lucide="save" class="h-4 w-4"></i> Guardar cambios</button>
 			</div>
 		</form>
 	</main>
 
 	<template id="escenario-template"><article class="escenario-item rounded-lg border border-movilnet-input-border bg-movilnet-input p-4"><div class="mb-4 flex items-center justify-between"><h3 class="text-sm font-bold text-movilnet-primary">Nuevo escenario</h3><button type="button" class="remove-escenario text-movilnet-muted transition hover:text-red-600" title="Eliminar escenario"><i data-lucide="trash-2" class="h-4 w-4"></i></button></div><div class="grid gap-4 md:grid-cols-3"><label class="text-xs font-bold uppercase tracking-wider text-movilnet-muted">Categoría<select class="escenario-categoria mt-2 w-full rounded-lg border border-movilnet-input-border bg-movilnet-card px-3 py-3 text-sm font-normal normal-case tracking-normal"><option value="NEUTRAL">Neutral</option><option value="FAVORABLE">Favorable</option><option value="DESFAVORABLE">Desfavorable</option></select></label><label class="text-xs font-bold uppercase tracking-wider text-movilnet-muted md:col-span-2">Análisis<textarea class="escenario-analisis mt-2 w-full rounded-lg border border-movilnet-input-border bg-movilnet-card p-3 text-sm font-normal normal-case tracking-normal focus:border-movilnet-primary focus:outline-none"></textarea></label></div><label class="mt-4 block text-xs font-bold uppercase tracking-wider text-movilnet-muted">Curso de acción<textarea class="escenario-curso mt-2 w-full rounded-lg border border-movilnet-input-border bg-movilnet-card p-3 text-sm font-normal normal-case tracking-normal focus:border-movilnet-primary focus:outline-none"></textarea></label></article></template>
+	{% endblock %}
+	{% block scripts %}
 	<script>
 		const form = document.querySelector('#form-editar');
 		const escenariosContainer = document.querySelector('#escenarios-container');
@@ -175,5 +162,4 @@
 		actualizarNumeros();
 		lucide.createIcons();
 	</script>
-</body>
-</html>
+{% endblock %}

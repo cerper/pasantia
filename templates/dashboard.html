@@ -1,44 +1,24 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | Movilnet Intelligence</title>
-    
-    <!-- Hojas de estilo y Scripts externos -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='dist/output.css') }}">
-    <script src="https://unpkg.com/lucide@latest"></script>
-</head>
-<body class="min-h-screen bg-movilnet-bg text-movilnet-dark">
+{% extends "layout.html" %}
 
-    <!-- Encabezado Principal -->
-    <header class="border-b border-movilnet-input-border bg-movilnet-card">
-        <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 md:px-10">
-            
-            <!-- Branding / Logo -->
-            <div class="flex items-center gap-3">
-                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-movilnet-primary text-sm font-black text-white">
-                   <a href="/"> m</a>
+{% block title %} Movilnet Intelligence{% endblock %}
+
+{% block content %}
+<div class="mx-auto flex w-h-fit  flex-col items-stretch gap-6 px-2 py-10 md:flex-row md:items-start md:gap-8 md:px-10">
+        <div class=" w-20 shrink-0 rounded-xl border-r border-movilnet-input-border bg-movilnet-card p-6 md:sticky md:top-4 md:flex  md:flex-col md:justify-between h-fit">
+            <div>
+                <div class="mb-8">
+                    <h2 class="text-lg font-bold text-movilnet-primary">Movilnet Inteligencia</h2>
                 </div>
-                <div>
-                    <p class="text-xl font-black tracking-tight text-movilnet-primary">movilnet</p>
-                    <p class="text-[0.6rem] font-semibold uppercase tracking-[0.24em] text-movilnet-muted">
-                        intelligence dashboard
-                    </p>
-                </div>
-            </div>
 
-            <!-- Usuario Activo -->
-            <div class="flex items-center gap-3 text-sm text-movilnet-muted">
-                <span>{{ current_user.nombre }} {{ current_user.apellido }}</span>
-                <i data-lucide="user-circle" class="h-6 w-6 text-movilnet-primary"></i>
+                <nav class="space-y-1">
+                    <a href="{{ url_for('reportes') }}" class="flex items-center gap-3 rounded-lg bg-movilnet-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-movilnet-primary-hover">
+                        <i data-lucide="layout-dashboard" class="h-4 w-4"></i>
+                        <span> Reportes</span>
+                    </a>
+                </nav>
             </div>
-
         </div>
-    </header>
-
-    <!-- Contenido Principal -->
-    <main class="mx-auto max-w-7xl space-y-8 px-6 py-10 md:px-10">
+    <main class="mx-auto max-w-lg space-y-8 px-6 py-10 md:px-10">
         
         <!-- Encabezado de la Sección -->
         <div class="flex flex-col justify-between gap-4 md:flex-row md:items-end">
@@ -53,13 +33,8 @@
                     Consulta el estado y prepara los borradores para presentación.
                 </p>
             </div>
-
-            <a href="{{ url_for('reportes') }}" 
-               class="inline-flex items-center justify-center gap-2 rounded-lg bg-movilnet-primary px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-movilnet-primary-hover">
-                <i data-lucide="plus" class="h-4 w-4"></i> 
-                Nuevo reporte
-            </a>
         </div>
+        
 
         <!-- Mensajes Flash de Jinja2 -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -103,10 +78,10 @@
                             </div>
 
                             <!-- Acciones (Admin) -->
-                            {% if current_user.tiene_rol('Admin') and reporte.estado.value in ('Borrador', 'Pendiente') %}
+                            {% if current_user.tiene_rol('Admin') and reporte.estado.value in ('Borrador', 'Pendiente', 'Aprobado') %}
                                 <div class="flex shrink-0 flex-wrap gap-2">
                                     <a href="{{ url_for('editar_reporte', reporte_id=reporte.id) }}" 
-                                       class="inline-flex items-center gap-2 rounded-lg border border-movilnet-primary px-3 py-2 text-sm font-bold text-movilnet-primary transition hover:bg-movilnet-primary hover:text-white">
+                                       class="inline-flex items-center gap-2 rounded-lg border border-movilnet-primary px-3 py-2 text-sm font-bold text-movilnet-primary transition hover:bg-movilnet-accent hover:text-white">
                                         <i data-lucide="pencil" class="h-4 w-4"></i> 
                                         Editar
                                     </a>
@@ -137,9 +112,4 @@
 
     </main>
 
-    <!-- Inicialización de Iconos Lucide -->
-    <script>
-        lucide.createIcons();
-    </script>
-</body>
-</html>
+{% endblock %}

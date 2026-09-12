@@ -17,6 +17,7 @@ from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.util import Inches, Pt
 from dotenv import load_dotenv
+from PIL import Image
 
 # 1. Cargar dotenv de primero
 load_dotenv()
@@ -32,7 +33,7 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'clave_por_defecto_desarrollo
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', "jfif"}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'jfif', 'webp'}
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 db = SQLAlchemy(app)
@@ -207,6 +208,18 @@ def guardar_imagen(archivo):
     return os.path.join('uploads', nombre_unico), nombre_original
 
 
+def guardar_metrica(archivo):
+    """Guarda la primera métrica seleccionada y rechaza archivos no válidos."""
+    if not archivo or not archivo.filename:
+        return None
+    resultado = guardar_imagen(archivo)
+    if not resultado:
+        raise ValueError(
+            f"La imagen de métricas '{archivo.filename}' no tiene un formato permitido."
+        )
+    return resultado
+
+
 def hay_datos_campana(analisis, comentarios, imagenes, imagen_metrica, no_hubo):
     return bool(
         no_hubo
@@ -371,7 +384,7 @@ def reportes():
                         ))
 
                 for archivo in imagen_metrica:
-                    resultado = guardar_imagen(archivo)
+                    resultado = guardar_metrica(archivo)
                     if resultado:
                         ruta, _ = resultado
                         archivos_guardados.append(os.path.join(app.config['UPLOAD_FOLDER'], os.path.basename(ruta)))
@@ -393,13 +406,13 @@ def reportes():
                     os.remove(ruta)
             flash("No se pudo guardar el reporte.", "error")
 
-        return redirect(url_for("dashboard"))
+        return redirect(url_for("gestion_reportes"))
 
     return render_template("reportes.html")
 
-@app.route("/dashboard")
+@app.route("/gestion_reportes")
 @login_required
-def dashboard():
+def gestion_reportes():
     reportes = ReporteCompetencia.query.order_by(ReporteCompetencia.updated_at.desc()).all()
     return render_template("dashboard.html", reportes=reportes)
 
@@ -410,7 +423,7 @@ def editar_reporte(reporte_id):
     reporte = ReporteCompetencia.query.get_or_404(reporte_id)
     if reporte.estado not in (EstadoReporte.BORRADOR, EstadoReporte.PENDIENTE):
         flash("Este reporte no puede editarse en su estado actual.", "error")
-        return redirect(url_for("dashboard"))
+        return redirect(url_for("gestion_reportes"))
 
     if request.method == "POST":
         try:
@@ -470,12 +483,12 @@ def editar_reporte(reporte_id):
                             nombre_original=nombre_original,
                         ))
                 for archivo in request.files.getlist(f"campana_{clave}_metrica_imagen"):
-                    resultado = guardar_imagen(archivo)
+                    resultado = guardar_metrica(archivo)
                     if resultado:
                         seguimiento.imagen_metrica = resultado[0]
                         break
 
-            reporte.estado = EstadoReporte.BORRADOR
+            reporte.estado = EstadoReporte.APROBADO
             reporte.updated_at = datetime.utcnow()
             db.session.commit()
             for ruta in imagenes_eliminadas:
@@ -483,7 +496,7 @@ def editar_reporte(reporte_id):
                 if os.path.exists(ruta_archivo):
                     os.remove(ruta_archivo)
             flash("Los cambios del borrador se guardaron correctamente.", "success")
-            return redirect(url_for("dashboard"))
+            return redirect(url_for("gestion_reportes"))
         except (ValueError, json.JSONDecodeError, SQLAlchemyError, OSError) as error:
             db.session.rollback()
             flash(str(error) if isinstance(error, ValueError) else "No se pudo guardar la edición del reporte.", "error")
@@ -519,6 +532,17 @@ def _estilo_slide(slide, titulo, subtitulo=None):
     _agregar_texto(slide, titulo, 0.65, 0.55, 12, 0.55, 26, (201, 59, 59), True)
     if subtitulo:
         _agregar_texto(slide, subtitulo, 0.65, 1.12, 12, 0.3, 10, (115, 115, 115))
+
+
+def _imagen_para_pptx(ruta_imagen):
+    if os.path.splitext(ruta_imagen)[1].lower() != ".webp":
+        return ruta_imagen
+
+    imagen_convertida = BytesIO()
+    with Image.open(ruta_imagen) as imagen:
+        imagen.convert("RGB").save(imagen_convertida, format="PNG")
+    imagen_convertida.seek(0)
+    return imagen_convertida
 
 
 def generar_pptx(reporte):
@@ -584,7 +608,7 @@ def generar_pptx(reporte):
                 width = 2.5 if inicio_grupo == 0 else 5.4
                 height = 1.8 if inicio_grupo == 0 else 2.3
                 slide.shapes.add_picture(
-                    ruta_imagen,
+                    _imagen_para_pptx(ruta_imagen),
                     Inches(left),
                     Inches(top),
                     width=Inches(width),

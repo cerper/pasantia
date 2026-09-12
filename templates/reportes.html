@@ -1,77 +1,25 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reporte de la Competencia</title>
-    <!-- Tailwind CSS (Asegúrate de incluir tu build de Tailwind o usar el CDN para pruebas) -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='dist/output.css') }}">
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-   
-</head>
- <script src="{{ url_for('static', filename='js/escenarios.js') }}"></script>
-<body class="bg-movilnet-bg font-sans text-movilnet-dark min-h-screen flex">
+{% extends "layout.html" %}
 
-    <!-- BARRA LATERAL IZQUIERDA (Sidebar) -->
-    <aside class="w-64 bg-movilnet-card border-r border-movilnet-input-border flex flex-col justify-between p-6 shrink-0 hidden md:flex">
-        <div>
-            <!-- Branding Sidebar -->
-            <div class="mb-8">
-                <h2 class="text-lg font-bold text-movilnet-primary">Movilnet Inteligencia</h2>
+{% block title %}Reporte de la Competencia{% endblock %}
+
+{% block content %}
+    <div class="mx-auto flex w-h-fit max-w-4xl flex-col items-stretch gap-6 px-6 py-10 md:flex-row md:items-start md:gap-8 md:px-10">
+        <div class=" w-30 shrink-0 rounded-xl border-r border-movilnet-input-border bg-movilnet-card p-6 md:sticky md:top-4 md:flex  md:flex-col md:justify-between h-fit">
+            <div>
+                <div class="mb-8">
+                    <h2 class="text-lg font-bold text-movilnet-primary">Movilnet Inteligencia</h2>
+                </div>
+
+                <nav class="space-y-1">
+                    <a href="{{ url_for('gestion_reportes') }}" class="flex items-center gap-3 rounded-lg bg-movilnet-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-movilnet-primary-hover">
+                        <i data-lucide="layout-dashboard" class="h-4 w-4"></i>
+                        <span>Gestión de reportes</span>
+                    </a>
+                </nav>
             </div>
-
-            <!-- Navegación -->
-            <nav class="space-y-1">
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-movilnet-primary text-white font-medium text-sm transition-colors">
-                    <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
-                    <span>Situación Actual</span>
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-movilnet-muted hover:bg-movilnet-bg text-sm font-medium transition-colors">
-                    <i data-lucide="trending-up" class="w-4 h-4"></i>
-                    <span>Escenarios</span>
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-movilnet-muted hover:bg-movilnet-bg text-sm font-medium transition-colors">
-                    <i data-lucide="bookmark" class="w-4 h-4"></i>
-                    <span>Seguimiento</span>
-                </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-movilnet-muted hover:bg-movilnet-bg text-sm font-medium transition-colors">
-                    <i data-lucide="activity" class="w-4 h-4"></i>
-                    <span>Comportamiento</span>
-                </a>
-                 <a href="/dashboard" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-movilnet-muted hover:bg-movilnet-bg text-sm font-medium transition-colors">
-                    <i data-lucide="activity" class="w-4 h-4"></i>
-                    <span>dashboard</span>
-                </a>
-
-            </nav>
         </div>
 
-        <!-- Footer Sidebar -->
-        <div class="text-xs text-movilnet-muted border-t border-movilnet-input-border pt-4">
-            <p>&copy; 2026 Movilnet - Inteligencia Competitiva</p>
-        </div>
-    </aside>
-
-    <!-- CONTENIDO PRINCIPAL -->
-    <div class="flex-1 flex flex-col min-w-0">
-        
-        <!-- Encabezado de la Página -->
-        <header class="bg-movilnet-card border-b border-movilnet-input-border px-8 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-movilnet-primary/10 flex items-center justify-center text-movilnet-primary font-bold">
-                    M
-                </div>
-                <h1 class="text-xl font-bold text-movilnet-primary">Reporte de la Competencia</h1>
-            </div>
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-movilnet-muted-light overflow-hidden flex items-center justify-center text-white">
-                    <i data-lucide="user" class="w-5 h-5"></i>
-                </div>
-            </div>
-        </header>
-
-        <main class="p-8 space-y-6 max-w-7xl mx-auto w-full">
+        <div class="min-w-0 flex-1 space-y-6">
             
             <!-- Selección de Tipo de Reporte (Selector Superior Global) -->
             <section class="bg-movilnet-card p-4 rounded-xl border border-movilnet-input-border shadow-sm">
@@ -267,19 +215,17 @@
 
                 <!-- Botón de Acción Principal -->
                 <section class="flex justify-end pt-4">
-                    <button type="submit" class="bg-movilnet-primary hover:bg-movilnet-primary-hover text-white font-semibold px-6 py-2.5 rounded-lg shadow-sm transition-colors text-sm flex items-center gap-2">
+                    <button type="submit" class="bg-movilnet-accent hover:bg-movilnet-primary-hover text-white font-semibold px-6 py-2.5 rounded-lg shadow-sm transition-colors text-sm flex items-center gap-2">
                         <i data-lucide="save" class="w-4 h-4"></i>
                         <span>Guardar borrador y enviar a revisión</span>
                     </button>
                 </section>
 
             </form>
-        </main>
+        </div>
     </div>
+{% endblock %}
 
-    <!-- Inicializar Iconos Lucide -->
-    <script>
-        lucide.createIcons();
-    </script>
-</body>
-</html>
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/escenarios.js') }}"></script>
+{% endblock %}

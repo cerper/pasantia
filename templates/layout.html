@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Movilnet Intelligence{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dist/output.css') }}">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-movilnet-bg text-movilnet-dark">
+    <!-- Navbar Fijo -->
+    <header class="fixed inset-x-0 top-0 z-50 border-b border-movilnet-input-border bg-movilnet-card">
+        <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 md:px-10">
+            <a href="{{ url_for('gestion_reportes') }}" class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-movilnet-primary text-sm font-black text-white">
+                    m
+                </div>
+                <div>
+                    <p class="text-xl font-black tracking-tight text-movilnet-primary">movilnet</p>
+                    <p class="text-[0.6rem] font-semibold uppercase tracking-[0.24em] text-movilnet-muted">intelligence</p>
+                </div>
+            </a>
+            <div class="flex items-center gap-3 text-sm text-movilnet-muted">
+                <span>{{ current_user.nombre }} {{ current_user.apellido }}</span>
+                <i data-lucide="user-circle" class="h-6 w-6 text-movilnet-primary"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal compensado con pt-24 para no solaparse con el header -->
+    <main class="pt-24">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script>
+        lucide.createIcons();
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
