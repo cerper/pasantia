@@ -3,16 +3,24 @@
 {% block title %}Presentación - Reporte #{{ reporte.id }}{% endblock %}
 
 {% block content %}
-        <main class="mx-auto max-w-5xl px-6 py-10 md:px-10">
+    <div class="mx-auto flex w-full max-w-7xl flex-col items-stretch gap-6 px-8 py-10 md:flex-row md:items-start md:gap-8 md:px-10">
+        <div class="w-full shrink-0 rounded-xl border-r border-movilnet-input-border bg-movilnet-card p-10 md:fixed md:left-6 md:top-24 md:z-40 md:w-52 md:flex md:flex-col md:justify-between md:h-fit">
+            <nav class="space-y-1">
+                <a href="{{ url_for('gestion_reportes') }}" class="flex items-center gap-3 rounded-lg bg-movilnet-primary px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-movilnet-primary-hover">
+                    <i data-lucide="layout-dashboard" class="h-4 w-4"></i>
+                    <span>Gestión de reportes</span>
+                </a>
+            </nav>
+        </div>
+
+        <main class="min-w-0 flex-1 space-y-6 md:ml-56">
             <div class="mb-10 flex items-center justify-between">
                 <div>
-                    <p class="text-xs mt-4 font-bold uppercase tracking-[0.24em] text-movilnet-primary">Movilnet intelligence</p>
                     <h1 class="mt-2 text-4xl font-black">Reporte #{{ reporte.id }}</h1>
                     <p class="mt-2 text-movilnet-muted">Presentación generada desde el borrador editado</p>
                 </div>
                
                 <div class="flex flex-wrap justify-end gap-3">
-                     <a href="{{ url_for('gestion_reportes') }}" class="rounded-lg bg-movilnet-accent px-4 py-3 text-sm font-bold text-white">Gestion Reportes</a>
                     <a href="{{ url_for('descargar_presentacion', reporte_id=reporte.id) }}" class="rounded-lg bg-movilnet-accent px-4 py-3 text-sm font-bold text-white">Descargar PPTX</a>
                 </div>
             </div>
@@ -69,4 +77,5 @@
                 </div>
             </section>
         </main>
-    {% endblock %}
+    </div>
+{% endblock %}

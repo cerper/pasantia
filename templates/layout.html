@@ -21,9 +21,32 @@
                     <p class="text-[0.6rem] font-semibold uppercase tracking-[0.24em] text-movilnet-muted">intelligence</p>
                 </div>
             </a>
-            <div class="flex items-center gap-3 text-sm text-movilnet-muted">
-                <span>{{ current_user.nombre }} {{ current_user.apellido }}</span>
-                <i data-lucide="user-circle" class="h-6 w-6 text-movilnet-primary"></i>
+            <div class="relative" id="perfil-menu">
+                <button
+                    type="button"
+                    id="perfil-boton"
+                    class="flex items-center gap-3 text-sm text-movilnet-muted"
+                    aria-label="Abrir menú de perfil"
+                    aria-expanded="false"
+                    aria-controls="perfil-dropdown"
+                >
+                    <span>{{ current_user.nombre }} {{ current_user.apellido }}</span>
+                    <i data-lucide="user-circle" class="h-6 w-6 text-movilnet-primary"></i>
+                </button>
+                <div
+                    id="perfil-dropdown"
+                    class="absolute right-0 top-full z-10 mt-3 hidden min-w-40 rounded-lg border border-movilnet-input-border bg-white p-2 shadow-lg"
+                >
+                    <form action="{{ url_for('logout') }}" method="post">
+                        <button
+                            type="submit"
+                            class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-semibold text-movilnet-dark transition hover:bg-movilnet-bg"
+                        >
+                            <i data-lucide="log-out" class="h-4 w-4 text-movilnet-primary"></i>
+                            <span>Logout</span>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </header>
@@ -33,9 +56,7 @@
         {% block content %}{% endblock %}
     </main>
 
-    <script>
-        lucide.createIcons();
-    </script>
+    <script src="{{ url_for('static', filename='js/escenarios.js') }}"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

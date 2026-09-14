@@ -3,23 +3,18 @@
 {% block title %}Reporte de la Competencia{% endblock %}
 
 {% block content %}
-    <div class="mx-auto flex w-h-fit max-w-4xl flex-col items-stretch gap-6 px-6 py-10 md:flex-row md:items-start md:gap-8 md:px-10">
-        <div class=" w-30 shrink-0 rounded-xl border-r border-movilnet-input-border bg-movilnet-card p-6 md:sticky md:top-4 md:flex  md:flex-col md:justify-between h-fit">
-            <div>
-                <div class="mb-8">
-                    <h2 class="text-lg font-bold text-movilnet-primary">Movilnet Inteligencia</h2>
-                </div>
-
-                <nav class="space-y-1">
+    <div class="mx-auto flex w-full max-w-7xl flex-col items-stretch gap-6 px-6 py-10 md:flex-row md:items-start md:gap-8 md:px-10">
+        <div class="w-full  shrink-0 rounded-xl border-r border-movilnet-input-border bg-movilnet-card p-10 md:fixed md:left-6 md:top-24 md:z-40 md:w-52 md:flex md:flex-col md:justify-between md:h-fit">
+                <nav class="space-y-1 ">
                     <a href="{{ url_for('gestion_reportes') }}" class="flex items-center gap-3 rounded-lg bg-movilnet-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-movilnet-primary-hover">
                         <i data-lucide="layout-dashboard" class="h-4 w-4"></i>
                         <span>Gestión de reportes</span>
                     </a>
                 </nav>
-            </div>
+
         </div>
 
-        <div class="min-w-0 flex-1 space-y-6">
+        <div class="min-w-0 flex-1 space-y-6 md:ml-56">
             
             <!-- Selección de Tipo de Reporte (Selector Superior Global) -->
             <section class="bg-movilnet-card p-4 rounded-xl border border-movilnet-input-border shadow-sm">
@@ -224,8 +219,4 @@
             </form>
         </div>
     </div>
-{% endblock %}
-
-{% block scripts %}
-    <script src="{{ url_for('static', filename='js/escenarios.js') }}"></script>
 {% endblock %}

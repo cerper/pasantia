@@ -1,4 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+    lucide.createIcons();
+
+    const perfilMenu = document.getElementById('perfil-menu');
+    const perfilBoton = document.getElementById('perfil-boton');
+    const perfilDropdown = document.getElementById('perfil-dropdown');
+
+    if (perfilMenu && perfilBoton && perfilDropdown) {
+        const cerrarPerfil = () => {
+            perfilDropdown.classList.add('hidden');
+            perfilBoton.setAttribute('aria-expanded', 'false');
+        };
+
+        perfilBoton.addEventListener('click', () => {
+            const abierto = perfilBoton.getAttribute('aria-expanded') === 'true';
+            perfilDropdown.classList.toggle('hidden', abierto);
+            perfilBoton.setAttribute('aria-expanded', String(!abierto));
+        });
+
+        document.addEventListener('click', (evento) => {
+            if (!perfilMenu.contains(evento.target)) cerrarPerfil();
+        });
+
+        document.addEventListener('keydown', (evento) => {
+            if (evento.key === 'Escape') cerrarPerfil();
+        });
+    }
     
     // =========================================================================
     // 1. SECCIÓN: GESTIÓN DE ESCENARIOS Y CURSOS DE ACCIÓN
