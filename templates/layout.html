@@ -13,12 +13,11 @@
     <header class="fixed inset-x-0 top-0 z-50 border-b border-movilnet-input-border bg-movilnet-card">
         <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 md:px-10">
             <a href="{{ url_for('gestion_reportes') }}" class="flex items-center gap-3">
-                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-movilnet-primary text-sm font-black text-white">
-                    m
+                <div class="flex h-10 w-10 items-center justify-center rounded-full  text-sm font-black text-white">
+                    <img src="{{ url_for('static', filename='src/imagen_movilnet.png') }}" alt="imagen logo movilnet" class="h-10 w-10 object-cover">
                 </div>
                 <div>
                     <p class="text-xl font-black tracking-tight text-movilnet-primary">movilnet</p>
-                    <p class="text-[0.6rem] font-semibold uppercase tracking-[0.24em] text-movilnet-muted">intelligence</p>
                 </div>
             </a>
             <div class="relative" id="perfil-menu">
