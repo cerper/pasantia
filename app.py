@@ -27,9 +27,8 @@ app.config['SECRET_KEY'] = '1234'
 
 # Conexión a MariaDB
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mariadb+mariadbconnector://david:1234@localhost:3306/proyecto_movilnet'
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'clave_por_defecto_desarrollo')
 
-# Opción A: Usando la URL completa desde el .env
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'clave_por_defecto_desarrollo')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
@@ -340,8 +339,22 @@ def reportes():
                     request.form.get(f"no_campana_{clave}") == "1",
                 )
 
-            if not (situacion_movistar or situacion_digitel or escenarios_validos or hay_datos_campanas):
-                raise ValueError("No se puede guardar un reporte vacío. Completa al menos un campo.")
+            if not (situacion_movistar and situacion_digitel):
+                raise ValueError("Debes completar la situación actual de Movistar y Digitel.")
+
+            if not escenarios_validos:
+                raise ValueError("Debes agregar al menos un escenario con análisis y curso de acción.")
+
+            for operadora, clave in (("Movistar", "movistar"), ("Digitel", "digitel")):
+                no_hubo = request.form.get(f"no_campana_{clave}") == "1"
+                analisis = request.form.get(f"campana_{clave}_analisis", "").strip()
+                comentarios = request.form.get(f"campana_{clave}_comentarios", "").strip()
+
+                if no_hubo:
+                    continue
+
+                if not analisis or not comentarios:
+                    raise ValueError(f"Debes completar el análisis y comentarios de la campaña de {operadora} o marcar que no hubo campaña.")
 
             reporte = ReporteCompetencia(
                 estado=EstadoReporte.PENDIENTE,

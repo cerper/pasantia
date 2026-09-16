@@ -142,9 +142,53 @@ document.addEventListener('DOMContentLoaded', () => {
         renderizarListaEscenarios();
     };
 
+    function validarFormularioReporte() {
+        const situacionMovistar = document.getElementById('situacion_movistar');
+        const situacionDigitel = document.getElementById('situacion_digitel');
+        const noCampanaMovistar = document.getElementById('no_campana_movistar');
+        const noCampanaDigitel = document.getElementById('no_campana_digitel');
+        const campanaMovistarAnalisis = document.getElementById('campana_movistar_analisis');
+        const campanaMovistarComentarios = document.getElementById('campana_movistar_comentarios');
+        const campanaDigitelAnalisis = document.getElementById('campana_digitel_analisis');
+        const campanaDigitelComentarios = document.getElementById('campana_digitel_comentarios');
+
+        if (!situacionMovistar || !situacionDigitel) return true;
+        if (!situacionMovistar.value.trim() || !situacionDigitel.value.trim()) {
+            alert('Debes completar la situación actual de Movistar y Digitel antes de guardar el reporte.');
+            return false;
+        }
+
+        if (listaEscenarios.length === 0) {
+            alert('Debes agregar al menos un escenario con categoría, análisis y curso de acción.');
+            return false;
+        }
+
+        const validarCampana = (checkbox, analisis, comentarios) => {
+            if (checkbox && checkbox.checked) return true;
+            if (!analisis || !comentarios) return false;
+            return analisis.value.trim() !== '' && comentarios.value.trim() !== '';
+        };
+
+        if (!validarCampana(noCampanaMovistar, campanaMovistarAnalisis, campanaMovistarComentarios)) {
+            alert('Debes completar el análisis y comentarios de la campaña de Movistar o marcar la opción “No hubo campaña este mes”.');
+            return false;
+        }
+
+        if (!validarCampana(noCampanaDigitel, campanaDigitelAnalisis, campanaDigitelComentarios)) {
+            alert('Debes completar el análisis y comentarios de la campaña de Digitel o marcar la opción “No hubo campaña este mes”.');
+            return false;
+        }
+
+        return true;
+    }
+
     // Sincronizar JSON antes de enviar el formulario
     if (formReporte) {
-        formReporte.addEventListener('submit', () => {
+        formReporte.addEventListener('submit', (event) => {
+            if (!validarFormularioReporte()) {
+                event.preventDefault();
+                return;
+            }
             if (inputHidden) {
                 inputHidden.value = JSON.stringify(listaEscenarios);
             }
