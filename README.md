@@ -97,7 +97,7 @@ flask run
 2. Crea un reporte de competencia.
 3. Completa la información de situación actual, escenarios y seguimiento de campañas.
 4. Guarda el reporte y revisa su estado.
-5. Desde el dashboard puedes editar o generar la presentación final.
+5. Desde la gestion de reportes puedes editar o generar la presentación final.
 6. Descarga el archivo PPTX generado desde la vista de presentación.
 
 ## Modelo de negocio
@@ -108,10 +108,3 @@ El sistema está orientado a la gestión de información competitiva en telecomu
 
 Proyecto en desarrollo activo, orientado a la gestión interna de reportes y entregables ejecutivos.
 
-## Licencia
-
-Este proyecto se distribuye bajo una licencia de uso interno del equipo o del propietario del repositorio. Ajusta esta sección según la licencia que aplique a tu caso.
-
-## Contacto
-
-Si quieres colaborar o hacer mejoras, puedes contactar con el responsable del proyecto.
