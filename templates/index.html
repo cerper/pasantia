@@ -1,5 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
+{% extends "layout.html" %}
+
+{% block title %}Inicio de sesión{% endblock %}
+
+{% block content %}
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,23 +13,7 @@
   </head>
   <body class="min-h-screen bg-movilnet-bg text-movilnet-dark antialiased">
    
-    <div class="flex min-h-screen flex-col">
-      <header class="mx-auto flex w-full max-w-[1500px] items-center justify-between px-6 py-5 md:px-10">
-        <div class="flex items-center gap-3">
-          <div class="flex h-10 w-10 items-center justify-center rounded-full bg-movilnet-primary text-sm font-black text-white shadow-md">m</div>
-          <div class="leading-none">
-            <div class="text-[1.6rem] font-black tracking-[-0.06em] text-movilnet-primary">movilnet</div>
-            <div class="mt-1 text-[0.58rem] font-semibold uppercase tracking-[0.2em] text-movilnet-muted">intelligence</div>
-          </div>
-        </div>
-
-        <button type="button" class="flex h-11 w-11 items-center justify-center rounded-full border border-movilnet-input-border bg-white text-movilnet-dark shadow-sm transition hover:bg-movilnet-bg" aria-label="Perfil">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21a8 8 0 1 0-16 0" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
-        </button>
-      </header>
+    
 
       <main class="flex flex-1 items-center justify-center px-4 pb-10 pt-4 md:px-8">
         <div class="grid w-full max-w-[1200px] overflow-hidden rounded-[28px] border border-movilnet-input-border bg-white/70 shadow-[0_22px_60px_rgba(123,31,31,0.08)] md:grid-cols-2">
@@ -122,3 +111,4 @@
     </div>
   </body>
 </html>
+{% endblock %}
