@@ -3,21 +3,29 @@ import json
 import uuid
 from io import BytesIO
 from flask import Flask, render_template, render_template_string, redirect, request, url_for, flash, send_file
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from functools import wraps
 from flask_migrate import Migrate
 from sqlalchemy_utils import database_exists, create_database 
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from datetime import datetime
-import enum
 from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.util import Inches, Pt
 from dotenv import load_dotenv
 from PIL import Image
+from models.models import (
+    CampanaImagen,
+    EscenarioAccion,
+    EscenarioCategoria,
+    EstadoReporte,
+    ReporteCompetencia,
+    Role,
+    SeguimientoCampana,
+    User,
+    db,
+)
 
 # 1. Cargar dotenv de primero
 load_dotenv()
@@ -35,145 +43,10 @@ app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'jfif', 'webp'}
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-db = SQLAlchemy(app)
+db.init_app(app)
 migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
-
-# --- MODELOS DE DATOS (Roles y Usuarios) ---
-roles_usuarios = db.Table('roles_usuarios',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('role_id', db.Integer, db.ForeignKey('role.id'))
-)
-
-class Role(db.Model):
-    __tablename__ = 'role'
-    id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(50), unique=True)
-
-class User(UserMixin, db.Model):
-    __tablename__ = 'user'
-    id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(50),  nullable=False)
-    apellido = db.Column(db.String(50),  nullable=False)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    contraseña = db.Column(db.String(255), nullable=False)
-    roles = db.relationship('Role', secondary=roles_usuarios, backref=db.backref('usuarios', lazy='dynamic'))
-
-    def tiene_rol(self, nombre_rol):
-        return any(role.nombre == nombre_rol for role in self.roles)
-# --- ENUMS ---
-class EstadoReporte(enum.Enum):
-    BORRADOR = "Borrador"
-    PENDIENTE = "Pendiente"
-    APROBADO = "Aprobado"
-    
-
-class EscenarioCategoria(enum.Enum):
-    NEUTRAL = "Neutral"
-    FAVORABLE = "Favorable"
-    DESFAVORABLE = "Desfavorable"
-
-
-#  TABLA PRINCIPAL DEL REPORTE
-class ReporteCompetencia(db.Model):
-    __tablename__ = "reportes_competencia"
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    estado = db.Column(
-        db.Enum(EstadoReporte),
-        nullable=False,
-        default=EstadoReporte.BORRADOR,
-        index=True,
-    )
-    tipo_reporte = db.Column(
-        db.String(50), nullable=False, default="competencia"
-    )
-
-    # Situación actual
-    situacion_movistar = db.Column(db.Text, nullable=True)
-    situacion_digitel = db.Column(db.Text, nullable=True)
-
-    # Auditoría
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = db.Column(
-        db.DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
-        nullable=False,
-    )
-
-    # Relaciones
-    escenarios = db.relationship(
-        "EscenarioAccion", backref="reporte", cascade="all, delete-orphan"
-    )
-    seguimientos = db.relationship(
-        "SeguimientoCampana", backref="reporte", cascade="all, delete-orphan"
-    )
-
-
-#  TABLA PARA MÚLTIPLES ESCENARIOS (1:N)
-class EscenarioAccion(db.Model):
-    __tablename__ = "escenarios_accion"
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    reporte_id = db.Column(
-        db.Integer,
-        db.ForeignKey("reportes_competencia.id", ondelete="CASCADE"),
-        nullable=False,
-    )
-
-    categoria = db.Column(
-        db.Enum(EscenarioCategoria),
-        nullable=False,
-        default=EscenarioCategoria.NEUTRAL,
-    )
-    analisis = db.Column(db.Text, nullable=True)
-    curso_accion = db.Column(db.Text, nullable=True)
-
-
-#  TABLA PARA EL SEGUIMIENTO POR OPERADORA (Movistar / Digitel)
-class SeguimientoCampana(db.Model):
-    __tablename__ = "seguimiento_campanas"
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    reporte_id = db.Column(
-        db.Integer,
-        db.ForeignKey("reportes_competencia.id", ondelete="CASCADE"),
-        nullable=False,
-    )
-
-    operadora = db.Column(
-        db.String(20), nullable=False
-    )  # 'Movistar' o 'Digitel'
-    analisis = db.Column(db.Text, nullable=True)
-    comentarios = db.Column(db.Text, nullable=True)
-
-    # Imagen individual de sentimiento / métricas
-    imagen_metrica = db.Column(db.String(255), nullable=True)
-
-    # Relación a múltiples imágenes de campaña
-    imagenes = db.relationship(
-        "CampanaImagen", backref="campana", cascade="all, delete-orphan"
-    )
-
-
-#  TABLA PARA MÚLTIPLES IMÁGENES DE CAMPAÑA (1:N)
-class CampanaImagen(db.Model):
-    __tablename__ = "campana_imagenes"
-
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    campana_id = db.Column(
-        db.Integer,
-        db.ForeignKey("seguimiento_campanas.id", ondelete="CASCADE"),
-        nullable=False,
-    )
-
-    ruta_imagen = db.Column(
-        db.String(255), nullable=False
-    )  # P. ej. 'assets/uploads/campana_1_img2.jpg'
-    nombre_original = db.Column(db.String(255), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -440,7 +313,7 @@ def gestion_reportes():
 @requiere_rol("Admin")
 def editar_reporte(reporte_id):
     reporte = ReporteCompetencia.query.get_or_404(reporte_id)
-    if reporte.estado not in (EstadoReporte.BORRADOR, EstadoReporte.PENDIENTE):
+    if reporte.estado not in (EstadoReporte.BORRADOR, EstadoReporte.PENDIENTE, EstadoReporte.APROBADO):
         flash("Este reporte no puede editarse en su estado actual.", "error")
         return redirect(url_for("gestion_reportes"))
 

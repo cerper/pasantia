@@ -91,6 +91,12 @@ pip install -r requirements.txt
 flask run
 ```
 
+### Inicio en Windows
+
+1. Instala Python 3.10 o superior y MariaDB.
+2. Asegúrate de que MariaDB esté iniciado y que el archivo `.env` tenga configurada la variable `DATABASE_URL`.
+3. Haz doble clic en `iniciar.bat`. El archivo crea el entorno virtual si hace falta, verifica e instala las dependencias y abre la aplicación en `http://127.0.0.1:5000`.
+
 ## Uso
 
 1. Registra un usuario o inicia sesión.
